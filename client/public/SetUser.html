@@ -1,0 +1,29 @@
+<html>
+    <body>
+       <form action="/checkNewPass" method="post">
+           <!--reusable for login-->
+            <label for="username">Username:</label>
+            <input type="text" id="username" required>
+
+            <label for="email">Email:</label>
+            <input type="text" id="username" required>
+
+            <!--reusable for login-->
+            <label for="password">Password:</label>
+            <input 
+                type="password" 
+                name="password" 
+                id="password"
+                minlength="8"
+                maxlength="10"
+                pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]"
+                title="Must contain 8-10 characters, alphabets, numbers and special characters"
+                required
+            >
+
+            <button type="submit">Submit</button>
+        </form>
+     
+    </body>
+    
+</html>
