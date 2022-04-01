@@ -2,13 +2,16 @@
     <body>
        <form action="/checkNewPass" method="post">
            <!--reusable for login-->
+           <!--username-->
             <label for="username">Username:</label>
             <input type="text" id="username" required>
 
+            <!--email-->
             <label for="email">Email:</label>
             <input type="text" id="username" required>
 
             <!--reusable for login-->
+            <!--password-->
             <label for="password">Password:</label>
             <input 
                 type="password" 
@@ -20,6 +23,9 @@
                 title="Must contain 8-10 characters, alphabets, numbers and special characters"
                 required
             >
+
+            <!--group name-->
+            <input type="text" name="groupName" id="groupName">
 
             <button type="submit">Submit</button>
         </form>
