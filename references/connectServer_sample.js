@@ -1,7 +1,8 @@
 // sample from mysql docs
 // To connect to mysql based on xdev protoccol
-'use strict';
+// Recommended for mysql 8.0
 
+'use strict';
 const mysqlx = require('@mysql/xdevapi');
 const options = { user: 'root', password: '002300', schema: 'nodelogin' };
 

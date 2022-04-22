@@ -14,18 +14,23 @@ const hashPass = async(password) => {
 
 // verifying hashed password
 const verifyPass = async(hashPass,inputPass) => {
+    console.log('checking password');
+    
     try {
         // comparing the hash against plaintext password
         if (await argon2.verify(hashPass, inputPass)) {
             // password match
             console.log("Password matched! Successful login!");
+            return 200;
         } else {
             // password did not match
             console.log("Password did not match.");
+            return 401;
         }
     } catch (err) {
         // received error
-        console.log('Error in verifying password.')
+        console.log('Error in verifying password.');
+        return 500;
     }
 }
 

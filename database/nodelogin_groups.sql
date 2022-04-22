@@ -7,7 +7,7 @@
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!50503 SET NAMES utf8mb4 */;
+/*!50503 SET NAMES utf8 */;
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
@@ -16,31 +16,27 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `accounts`
+-- Table structure for table `groups`
 --
 
-DROP TABLE IF EXISTS `accounts`;
+DROP TABLE IF EXISTS `groups`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `accounts` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `username` varchar(50) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `email` varchar(100) NOT NULL,
-  `group_id` int DEFAULT '0',
-  `inactive` tinyint(1) DEFAULT '0',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb3;
+CREATE TABLE `groups` (
+  `username` varchar(30) NOT NULL,
+  `groupName` varchar(45) NOT NULL,
+  UNIQUE KEY `index1` (`username`,`groupName`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `accounts`
+-- Dumping data for table `groups`
 --
 
-LOCK TABLES `accounts` WRITE;
-/*!40000 ALTER TABLE `accounts` DISABLE KEYS */;
-INSERT INTO `accounts` VALUES (0,'test','test','test@test.com',0,0);
-/*!40000 ALTER TABLE `accounts` ENABLE KEYS */;
+LOCK TABLES `groups` WRITE;
+/*!40000 ALTER TABLE `groups` DISABLE KEYS */;
+INSERT INTO `groups` VALUES ('admin','Admin'),('chuanwu','Admin'),('desc','Admin'),('desc','Project Lead'),('desc','Project Manager'),('desc','Team Member'),('member2','Admin');
+/*!40000 ALTER TABLE `groups` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -52,4 +48,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-04-01 15:00:18
+-- Dump completed on 2022-04-22 15:54:21
