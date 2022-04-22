@@ -246,6 +246,7 @@ module.exports = function(app) {
         }
         console.log('str: ',str)
         
+<<<<<<< HEAD
         if (str===' ') {
             // add the user to the group roles 
             const query2 = `INSERT INTO nodelogin.groups(username,groupName) VALUES ${str};`;
@@ -264,6 +265,24 @@ module.exports = function(app) {
                 throw err;
             });
         }
+=======
+        // add the user to the group roles 
+        const query2 = `INSERT INTO nodelogin.groups(username,groupName) VALUES ${str};`;
+        console.log(query2)
+        // create new rows in the groups table 
+        getQuery.processQuery(query2, req.pool).then((rows) => {
+            // print if user is successfully added to role groups
+            console.log('New User created. Response: ',rows);
+    
+            res.status(200).send();
+        }).catch((err) => { 
+            console.log('Error received\n', err);
+            // send 500 status 
+            res.status(500).send(); 
+            // Throw async to escape the promise chain
+            throw err;
+        }); 
+>>>>>>> origin/assign1_done
     });
 
     // disable a user (admin only) 
