@@ -246,8 +246,7 @@ module.exports = function(app) {
         }
         console.log('str: ',str)
         
-<<<<<<< HEAD
-        if (str===' ') {
+        if (str !='') {
             // add the user to the group roles 
             const query2 = `INSERT INTO nodelogin.groups(username,groupName) VALUES ${str};`;
             console.log(query2)
@@ -265,24 +264,6 @@ module.exports = function(app) {
                 throw err;
             });
         }
-=======
-        // add the user to the group roles 
-        const query2 = `INSERT INTO nodelogin.groups(username,groupName) VALUES ${str};`;
-        console.log(query2)
-        // create new rows in the groups table 
-        getQuery.processQuery(query2, req.pool).then((rows) => {
-            // print if user is successfully added to role groups
-            console.log('New User created. Response: ',rows);
-    
-            res.status(200).send();
-        }).catch((err) => { 
-            console.log('Error received\n', err);
-            // send 500 status 
-            res.status(500).send(); 
-            // Throw async to escape the promise chain
-            throw err;
-        }); 
->>>>>>> origin/assign1_done
     });
 
     // disable a user (admin only) 
@@ -385,7 +366,7 @@ module.exports = function(app) {
     app.post('/getUsersList/searchRole', (req,res) => {
         // query to get the users with the role
         const query1 = `SELECT nodelogin.groups.username FROM nodelogin.groups WHERE groupName='${req.body.roles}';`;
-        console.log('req: ',req.body)
+        console.log('req: ',req.body, ",")
         
         // get the list of users that has the role from the database
         getQuery.processQuery(query1, req.pool).then((rows) => {
@@ -400,16 +381,20 @@ module.exports = function(app) {
                 console.log('reach here')
                 for (let index = 0; index < list.length; index++) {
                     const element = list[index].username;
-                    if (index == list.length-1) {
-                        const value = `'${element}')`;
-                        str = str.concat(value.toString());
-                    } else {
-                        const value = `'${element}',`;
-                        str = str.concat(value.toString());
+                    if (element != 'desc') {
+                        if (index == list.length-1) {
+                            const value = `'${element}')`;
+                            str = str.concat(value.toString());
+                        } else {
+                            const value = `'${element}',`;
+                            str = str.concat(value.toString());
+                        }
                     }
                 }
             }
             console.log('str: ',str) 
+            // return empty array if there is no user with the role
+            if (str ==='(') {res.send([]);} 
 
             // query to get the users' details
             const query2 = `SELECT nodelogin.accounts.username, nodelogin.accounts.inactive,
