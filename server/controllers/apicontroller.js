@@ -61,17 +61,7 @@ module.exports = function(app) {
         delete req.session;
         res.end();
     });
-
-    // ALL USER ROUTES 
-    // app.use((req,res,next) => {
-    //     if (req.session.isLoggedIn) {
-    //         console.log('user exists');
-    //         next();
-    //     }
-        
-    //     res.send("Need to login");
-    // });
-
+    
     // get session user's email
     app.get('/getEmail',(req,res) => {
         const query = `SELECT email FROM accounts WHERE username="${req.session.username}"`;
