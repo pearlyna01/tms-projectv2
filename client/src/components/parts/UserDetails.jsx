@@ -122,7 +122,7 @@ const UpdateUserEmail = (props) => {
     )
 };
 
-// mini component to toggle 'assign/remove' button
+// mini component to toggle 'assign/remove' role button
 class AssignBut extends Component {
     constructor(props) {
         super(props);
@@ -285,7 +285,7 @@ class UserRow extends Component {
         }));
     }
 
-    // disable/enable user
+    // disable/enable user [new]
     handleDisable(event) {
         event.preventDefault();
         
@@ -322,6 +322,44 @@ class UserRow extends Component {
         }
         xhttp.send();
     }
+    
+    // disable/enable user
+    // handleDisable(event) {
+    //     event.preventDefault();
+        
+    //     // To refer to the UserRow object properties
+    //     const self = this;
+        
+    //     // if it is disabled -> enable it, else disable it 
+    //     const action = (self.state.inactive === 1) ? "enable" : "disable";
+    //     const actValue = (self.state.inactive === 1) ? 0 : 1;
+        
+    //     // http request
+    //     const httpReq = `../../${action}User/${self.state.details.username}`;
+    //     console.log(httpReq);
+
+    //     // send a http request to disable/enable user 
+    //     const xhttp = new XMLHttpRequest();
+    //     xhttp.open('POST', httpReq, true);
+    //     xhttp.setRequestHeader("Content-type", "application/json");
+    //     xhttp.onreadystatechange = function () {
+    //         // Enabled/disabled successfuly
+    //         if (this.readyState === this.DONE && this.status === 200) {
+    //             // set state for the active function
+    //             self.setState(state => ({
+    //                 ...state,
+    //                 inactive: actValue
+    //             }));
+    //             console.log(self.state)
+    //             console.log(`User has been ${action}`);
+    //         }
+    //         else if (this.readyState === 4 && this.status > 400) {
+    //             // Failed to disable/enable 
+    //             console.log('Failed to disbale/enable user.');
+    //         }
+    //     }
+    //     xhttp.send();
+    // }
 
     // componentDidUpdate(prevProps) {
     //     // Typical usage (don't forget to compare props):
@@ -336,8 +374,22 @@ class UserRow extends Component {
             <tr>
                 {/* clickable button to disable/enable user */}
                 <td>
-
-                    <FaCheckCircle 
+                    <div class="form-check">
+                        <input 
+                            className="form-check-input" 
+                            type="checkbox" 
+                            value="" 
+                            id="inactive status" 
+                            checked={!this.state.inactive}
+                            onChange={this.handleDisable}
+                            style={{
+                                width: 23, 
+                                height: 23,
+                                margin: 1
+                            }}
+                        />
+                    </div>
+                    {/* <FaCheckCircle 
                         style={{ 
                             color: (this.state.inactive === 1) ? "#bf0000" : "#00bf60", 
                             cursor:"pointer",
@@ -346,9 +398,7 @@ class UserRow extends Component {
                         }}
                         title="Click to enable/disable user"
                         onClick={this.handleDisable}
-                    />
-            
-                
+                    /> */}
                 </td>
                 {/* display username and email */}
                 <td>{this.state.details.username}</td>

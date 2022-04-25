@@ -503,4 +503,24 @@ module.exports = function(app) {
             throw err;
         });
     });
+
+    // check group( username, grpName ) (admin only)
+    app.post('/checkGroup', (req, res) => {
+        const query = `SELECT EXISTS
+        (SELECT * FROM nodelogin.groups 
+        WHERE username="${req.body.username}" AND groupName="${req.body.grpName}") AS checkgrp;`;
+
+        // query to delete a role group
+        getQuery.processQuery(query, req.pool).then((rows) => {
+            // print if checkgroup exits
+            console.log(`if ${req.body.username} exists in ${req.body.grpName}, `, rows[0].checkgrp);
+            
+            res.send(JSON.stringify(rows[0].checkgrp));
+        }).catch((err) => { 
+            // send 500 status 
+            res.status(500).send(); 
+            // Throw async to escape the promise chain
+            throw err;
+        });
+    });
 }

@@ -26,6 +26,7 @@ function App() {
           <Route path="/settings" element={<Settings/>}/>
           
           <Route element={<RequireAuth role="admin"/>}>
+            
             <Route path="/createUser" element={<CreateUser/>}/>
             <Route path="/manageUser" element={<ManageUser />}/> 
             <Route path="/manageGrp" element={<ManageGrp />}/>

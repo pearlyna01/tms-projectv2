@@ -43,7 +43,8 @@ const CreateUser = () => {
     
     // function send http request to create a new user/row in accounts table
     async function createAUser(event) {
-        event.preventDefault();
+        //event.preventDefault();
+        
         // parse the list of roles into an array 
         const listRoles = value.split(',');
         console.log(listRoles)
