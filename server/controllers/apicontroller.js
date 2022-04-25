@@ -57,7 +57,6 @@ module.exports = function(app) {
 
     // logout user 
     app.post('/logout', (req,res) => {
-        req.session.isLoggedIn = false;
         delete req.session;
         res.end();
     });
@@ -120,16 +119,6 @@ module.exports = function(app) {
             throw err;
         }); 
     });
-
-    // ALL ADMIN ROUTES 
-    // app.use((req,res,next) => {
-    //     if (req.session.isLoggedIn) {
-    //         console.log('user exists');
-    //         next();
-    //     }
-        
-    //     res.send("Need to login");
-    // });
 
     // get a user's email (admin only)
     app.get('/getEmail/:user',(req,res) => {
