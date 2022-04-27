@@ -64,7 +64,7 @@ const CreateUser = () => {
             else if (this.readyState === 4 && this.status > 400) {
                 // Failed to create user
                 alert('Unable to create user');
-            } 
+            }
         }
         
         xhttp.send(JSON.stringify({

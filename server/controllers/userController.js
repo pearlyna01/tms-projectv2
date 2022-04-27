@@ -279,9 +279,9 @@ exports.enableUser = (req,res) => {
     }); 
 };
 
-// Admin: get list of group names
+// Admin: get list of group names/roles
 exports.getGrpNames = async (req,res) => {
-    const query = `SELECT JSON_ARRAYAGG(groupName) AS roles FROM nodelogin.groups WHERE username="desc"`;
+    const query = `SELECT JSON_ARRAYAGG(groupName) AS roles FROM nodelogin.groups WHERE username="desc" AND active='1'`;
 
     getQuery.processQuery(query, req.pool).then((rows) => {
         // print if received the password
@@ -296,7 +296,7 @@ exports.getGrpNames = async (req,res) => {
     }); 
 };
 
-// Admin: get the list of users
+// Admin: get the list of users details with role
 exports.getUserList = (req,res) => {
     const query = `SELECT nodelogin.accounts.username, nodelogin.accounts.inactive,
     nodelogin.accounts.email,
@@ -323,7 +323,7 @@ exports.getUserList = (req,res) => {
 // Admin: get the list of users BY ROLE
 exports.getUserListByRole = (req,res) => {
     // query to get the users with the role
-    const query1 = `SELECT nodelogin.groups.username FROM nodelogin.groups WHERE groupName='${req.body.roles}';`;
+    const query1 = `SELECT nodelogin.groups.username FROM nodelogin.groups WHERE groupName='${req.body.roles}' AND active='1';`;
     console.log('req: ',req.body, ",")
     
     // get the list of users that has the role from the database
@@ -409,7 +409,7 @@ exports.createRoleGroup = (req,res) => {
 
 // Admin: delete role group 
 exports.deleteRoleGroup = (req,res) => {
-    const query = `DELETE FROM nodelogin.groups WHERE groupName="${req.body.groupName}";`;
+    const query = `UPDATE nodelogin.groups SET active='0' WHERE groupName="${req.body.groupName}";`;
 
     // query to delete a role group
     getQuery.processQuery(query, req.pool).then((rows) => {
