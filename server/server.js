@@ -23,22 +23,18 @@ app.use(session({
     secret: "aSecret",
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false }
+    cookie: { 
+        secure: false,
+        maxAge: 60 * 60 * 1000
+    }
 }));
-
-// app.get('/index.js', function (req, res) {
-//     res.sendFile('index.js');
-// });
-
-// test api on client end
-// app.post('/testApi', (req,res) => {
-//     console.log('api works!');
-//     res.redirect('/');
-// });
 
 // pass app to controllers
 dbControl(app);
 apiControl(app);
+
+const user = require('./routes/user');
+app.use('/',user);
 
 // listening to port
 app.listen(port, () => {

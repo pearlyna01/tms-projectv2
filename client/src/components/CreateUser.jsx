@@ -54,7 +54,7 @@ const CreateUser = () => {
         xhttp.setRequestHeader("Content-type", "application/json");
         xhttp.onreadystatechange = function() {
             if (this.readyState === 4 && this.status === 200) {
-                if (this.responseText == "User already exists") {
+                if (this.responseText === "User already exists") {
                     alert("Username already exists. Choose another username.")
                 } else {
                     // User created successfully

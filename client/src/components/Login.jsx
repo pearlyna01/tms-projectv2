@@ -56,7 +56,7 @@ function Login(){
                 alert('Invalid login');
             } 
         }
-        xhttp.open("POST","../../login",true);
+        xhttp.open("POST","../../loginUser",true);
         xhttp.setRequestHeader("Content-type", "application/json");
         xhttp.send(JSON.stringify({username:username, password:password}));
     }

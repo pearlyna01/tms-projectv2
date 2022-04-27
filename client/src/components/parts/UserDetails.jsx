@@ -374,7 +374,7 @@ class UserRow extends Component {
             <tr>
                 {/* clickable button to disable/enable user */}
                 <td>
-                    <div class="form-check">
+                    <div className="form-check">
                         <input 
                             className="form-check-input" 
                             type="checkbox" 
@@ -453,11 +453,7 @@ class UserRow extends Component {
 }
 
 // maps out each user with its [id,username, inactive, group_name] in a array
-class UserDetails extends Component {    
-    // constructor(props) {
-    //     super(props);
-    // }
-    
+class UserDetails extends Component {
     render() {
         const array = this.props.array;
         return (

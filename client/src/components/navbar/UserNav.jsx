@@ -23,7 +23,7 @@ const UserNav = () => {
     
     // send http request to logout
     const xhttp = new XMLHttpRequest();
-    xhttp.open('POST', '../../logout', true);
+    xhttp.open('POST', '../../logoutUser', true);
     xhttp.send();
   }
 

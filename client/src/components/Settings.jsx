@@ -58,12 +58,11 @@ const UpdatePass = () => {
     const [passInput2, setPass2] = useState("");
 
     async function handleUpdatePass(event) {
-        //event.preventDefault();
-
         // show the user should enter the same password to confirm
         if (!(passInput1===passInput2)) {
             const element = document.getElementById("wrongPassText");
             element.classList.remove("d-none");
+            event.preventDefault();
             return;
         }
 
@@ -134,8 +133,6 @@ const UpdatePass = () => {
                 <button className="btn btn-primary float-end" type="submit">Save</button>
             </div>
             </div>
-
-            
         </form>
     )
 };
