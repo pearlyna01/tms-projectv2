@@ -1,4 +1,4 @@
-SELECT * FROM nodelogin.groups;
+SELECT tet* FROM nodelogin.groups;
 
 /* 1. Get list of users with roles */
 /* NOTE combine the 2 queries in node.js */
@@ -20,13 +20,16 @@ SELECT DISTINCT username, groupName AS roles FROM nodelogin.groups
 		AND active='1')
 AND NOT username="desc"
 ORDER BY username;
+
+SELECT * FROM nodelogin.groups GROUP BY username,groupName ORDER BY username;
+SELECT * FROM nodelogin.groups ORDER BY username;
 /* list of users and their details */
-SELECT username, inactive, email FROM nodelogin.accounts ORDER BY username;
+SELECT username, inactive, email FROM nodelogin.accounts ORDER BY username,timeModified;
 
 /* 2. Get list of a user's roles */
 /* note that this also checks if the user's roles is in the list of avaliable roles */
 SELECT json_arrayagg(groupName) AS roles FROM nodelogin.groups 
- WHERE id IN (SELECT MAX(id) FROM nodelogin.groups WHERE username="admin" GROUP BY groupName)
+ WHERE id IN (SELECT MAX(id) FROM nodelogin.groups WHERE username="test1" GROUP BY groupName)
  AND active='1'
  AND groupName in (
 	 SELECT groupName FROM nodelogin.groups 
@@ -42,6 +45,7 @@ SELECT * FROM nodelogin.groups
 	 AND active='1');
  
 /* 3. Add role */
+/* old */
 INSERT INTO nodelogin.groups(username,groupName) VALUES ('desc', 'Admin');
 /* Below query don't insert when role exists */
 INSERT INTO nodelogin.groups(username,groupName) SELECT 'desc','Admin'
@@ -50,8 +54,17 @@ WHERE NOT EXISTS (
 	 WHERE id IN (SELECT MAX(id) FROM nodelogin.groups WHERE username="desc" AND groupName="Admin" GROUP BY groupName)
 	 AND active='1'
 );
+
 /* 4. Remove role */
+/* old */
 INSERT INTO nodelogin.groups(username,groupName,active) VALUES ('desc', 'new role','0');
+/* Below query don't insert when it's already inactive */
+INSERT INTO nodelogin.groups(username,groupName,active) SELECT 'desc','Project Lead','0'
+WHERE NOT EXISTS (
+	SELECT 1 FROM nodelogin.groups 
+	 WHERE id IN (SELECT MAX(id) FROM nodelogin.groups WHERE username="desc" AND groupName="Project Lead" GROUP BY groupName)
+	 AND active='0'
+);
 
 /* 5. Get list of avaliable roles */
 SELECT JSON_ARRAYAGG(groupName) AS roles FROM nodelogin.groups 
@@ -65,7 +78,7 @@ SELECT * FROM nodelogin.groups
 /* 6. Remove assigned role */
 INSERT INTO nodelogin.groups(username,groupName,active) VALUES ('username', 'new role', '0');
 
-/* 7. Assign role [NO CHANGE] BUT NEED TO CHECK IF ROLE EXISTS*/
+/* 7. Assign role [NO CHANGE]*/
 INSERT INTO nodelogin.groups(username,groupName) VALUES ('username', 'new role');
 
 /* 8. Insert value when create role [NO CHANGE] BUT NEED TO CHECK IF ROLE EXISTS */
