@@ -5,6 +5,9 @@ import { BsFillPersonCheckFill } from 'react-icons/bs';
 import { atom, useAtom } from 'jotai';
 import FormWindow from './FormWindow';
 
+// atom to detect when the edit window has closed so that the list of users can refresh
+export const RefreshAtom = atom('refreshAtom', 'false');
+
 // component to update user password
 const UpdateUserPass = (props) => {
     const [passInput, setPass] = useState("");
@@ -186,6 +189,7 @@ class AssignBut extends Component {
         if (this.state.checkAssign) {
             return (
                 <button className="fw-bold btn btn-danger me-3" 
+                    style={{ width: 120 }}
                     onClick={this.handleAssign}
                 >
                     <BsFillPersonCheckFill className="me-2" />
@@ -195,6 +199,7 @@ class AssignBut extends Component {
         } else {
             return(
                 <button className="fw-bold btn btn-success me-3"
+                        style={{ width: 120 }}
                         onClick={this.handleAssign}
                 >
                     <BsFillPersonCheckFill className="me-2" />
@@ -204,6 +209,7 @@ class AssignBut extends Component {
         }
     }    
 }
+
 // component to assign user to a role group
 const AssignRole = (props) => {
     // user's currently assigned roles
@@ -443,6 +449,11 @@ class UserRow extends Component {
                         <AssignRole currentRoles={roles} 
                                     user={this.state.details.username}
                         />
+                        <div className="row mt-3">
+                        <div className="col">
+                            <button className="btn btn-primary float-end" onClick={this.toggleEdit}>Close Window</button>
+                        </div>
+                        </div>
                     </div>
                     </FormWindow>
                     )
