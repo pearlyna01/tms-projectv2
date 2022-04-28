@@ -17,16 +17,16 @@ SELECT DISTINCT username, groupName AS roles FROM nodelogin.groups
  AND groupName in (
 	 SELECT groupName FROM nodelogin.groups 
 	 WHERE id IN (SELECT MAX(id) FROM nodelogin.groups WHERE username="desc" GROUP BY groupName)
-	 AND active='1')
+		AND active='1')
 AND NOT username="desc"
 ORDER BY username;
 /* list of users and their details */
 SELECT username, inactive, email FROM nodelogin.accounts ORDER BY username;
 
-/* 2. Get list of user's roles */
+/* 2. Get list of a user's roles */
 /* note that this also checks if the user's roles is in the list of avaliable roles */
 SELECT json_arrayagg(groupName) AS roles FROM nodelogin.groups 
- WHERE id IN (SELECT MAX(id) FROM nodelogin.groups WHERE username="member3" GROUP BY groupName)
+ WHERE id IN (SELECT MAX(id) FROM nodelogin.groups WHERE username="admin" GROUP BY groupName)
  AND active='1'
  AND groupName in (
 	 SELECT groupName FROM nodelogin.groups 
@@ -41,9 +41,15 @@ SELECT * FROM nodelogin.groups
 	 WHERE id IN (SELECT MAX(id) FROM nodelogin.groups WHERE username="desc" GROUP BY groupName)
 	 AND active='1');
  
-/* 3. Add role [NO CHANGE] */
-INSERT INTO nodelogin.groups(username,groupName) VALUES ('desc', 'new role');
-
+/* 3. Add role */
+INSERT INTO nodelogin.groups(username,groupName) VALUES ('desc', 'Admin');
+/* Below query don't insert when role exists */
+INSERT INTO nodelogin.groups(username,groupName) SELECT 'desc','Admin'
+WHERE NOT EXISTS (
+	SELECT 1 FROM nodelogin.groups 
+	 WHERE id IN (SELECT MAX(id) FROM nodelogin.groups WHERE username="desc" AND groupName="Admin" GROUP BY groupName)
+	 AND active='1'
+);
 /* 4. Remove role */
 INSERT INTO nodelogin.groups(username,groupName,active) VALUES ('desc', 'new role','0');
 

@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 const app = express();
 
 // require controllers
-const apiControl = require('./controllers/apicontroller');
+//const apiControl = require('./controllers/apicontroller');
 const dbControl = require('./controllers/dbcontroller');
 
 var port = process.env.PORT || 3001;
@@ -31,7 +31,7 @@ app.use(session({
 
 // pass app to controllers
 dbControl(app);
-apiControl(app);
+//apiControl(app);
 
 const user = require('./routes/user');
 app.use('/',user);

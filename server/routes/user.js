@@ -4,14 +4,13 @@ const router = express.Router();
 
 const { isAuthenticated, authorizeRoles } = require('../modules/checkAuth');
 const { 
-    loginUser, logoutUser,
-    createUser,
+    loginUser, logoutUser, createUser,
     getEmail,
     updateEmail, updatePassword,
     getUserEmail,
     updateUserEmail, updateUserPassword,
     enableUser, disableUser,
-    getGrpNames, getUserList, getUserListByRole,
+    getGrpNames, getGrpNamesByUser, getUsersList, getUserListByRole,
     createRoleGroup, deleteRoleGroup,
     addUserRoleGroup, removeUserRoleGroup
 } = require('../controllers/userController');
@@ -22,6 +21,11 @@ router.route('/logoutUser').post(isAuthenticated, logoutUser);
 router.route('/getEmail').get(isAuthenticated, getEmail);
 router.route('/updateEmail').post(isAuthenticated, updateEmail);
 router.route('/updatePassword').post(isAuthenticated, updatePassword);
+
+// testing new routes
+router.route('/something').get(
+    
+);
 
 // ADMIN ROUTES 
 router.route('/createUser').post(
@@ -64,10 +68,15 @@ router.route('/getGrpNames').get(
     authorizeRoles(['Admin']), 
     getGrpNames
 );
+router.route('/getGrpNames/:username').get(
+    isAuthenticated, 
+    authorizeRoles(['Admin']), 
+    getGrpNamesByUser
+);
 router.route('/getUsersList').get(
     isAuthenticated, 
     authorizeRoles(['Admin']), 
-    getUserList
+    getUsersList
 );
 router.route('/getUsersList/searchRole').post(
     isAuthenticated, 
@@ -94,5 +103,6 @@ router.route('/removeUserRole').post(
     authorizeRoles(['Admin']), 
     removeUserRoleGroup
 );
+
 
 module.exports = router;

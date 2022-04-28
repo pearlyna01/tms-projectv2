@@ -107,15 +107,28 @@ const RowItem = ({ group, remove }) => {
   return (
     <li className="list-group-item">
       {group}
+      { (group === "Admin") ? 
       <button className="btn btn-danger btn-sm float-end"
               onClick={
                 e => {
                 e.preventDefault();
                 deleteRole(group);
               }}
+              disabled
       >
           Remove
-      </button>
+      </button> : 
+      <button className="btn btn-danger btn-sm float-end"
+            onClick={
+              e => {
+              e.preventDefault();
+              deleteRole(group);
+            }}
+      >
+        Remove
+      </button> 
+      }
+      
     </li>
   );
 } 

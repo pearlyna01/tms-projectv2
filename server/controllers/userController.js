@@ -21,7 +21,13 @@ exports.loginUser = async (req,res) => {
             console.log('Verifying Done!');
 
             // retreive the roles for that user
-            const query2  = `SELECT JSON_ARRAYAGG(groupName) AS roles FROM nodelogin.groups WHERE username="${req.body.username}";`;
+            const query2  = `SELECT json_arrayagg(groupName) AS roles FROM nodelogin.groups 
+            WHERE id IN (SELECT MAX(id) FROM nodelogin.groups WHERE username="${req.body.username}" GROUP BY groupName)
+            AND active='1'
+            AND groupName in (
+                SELECT groupName FROM nodelogin.groups 
+                WHERE id IN (SELECT MAX(id) FROM nodelogin.groups WHERE username="desc" GROUP BY groupName)
+                AND active='1');`;
             getQuery.processQuery(query2, req.pool).then((rows)=> {
                 // store username and roles in session
                 req.session.roles = rows[0].roles;
@@ -58,8 +64,88 @@ exports.logoutUser = async (req,res) => {
     res.end();
 };
 
-// Create a user
+// Get user email
+exports.getEmail = (req,res) => {
+    const query = `SELECT email FROM accounts WHERE username="${req.session.username}"`;
+
+    // check if username and password is correct
+    getQuery.processQuery(query, req.pool).then((rows) => {
+        // print if received the password
+        console.log('Email received: ',rows[0].email);
+        
+        res.send(rows[0].email);    
+    }).catch((err) => { 
+        // send 500 status 
+        res.status(500).send(); 
+        // Throw async to escape the promise chain
+        throw err;
+    }); 
+};
+
+// Update email
+exports.updateEmail = (req,res) => {
+    // query to update email
+    const query = `UPDATE accounts SET email="${req.body.email}" WHERE username="${req.session.username}"`;
+
+    // update email in database
+    getQuery.processQuery(query, req.pool).then((rows) => {
+        // print if received the password
+        console.log('Email updated. Response: ',rows);
+        
+        res.status(200).send();
+    }).catch((err) => { 
+        // send 500 status 
+        res.status(500).send(); 
+        // Throw async to escape the promise chain
+        throw err;
+    }); 
+};
+
+// Update password
+exports.updatePassword = async (req,res) => {
+    // hash new password
+    const newPass = await verifyPwd.hashPass(req.body.password);
+
+    // store new password
+    const query = `UPDATE accounts SET password="${newPass}" WHERE username="${req.session.username}"`;
+
+    // store password in database if username and password is correct
+    getQuery.processQuery(query, req.pool).then((rows) => {
+        // print if received the password
+        console.log('Password updated. Response: ',rows);
+        
+        res.status(200).send();
+    }).catch((err) => { 
+        // send 500 status 
+        res.status(500).send(); 
+        // Throw async to escape the promise chain
+        throw err;
+    }); 
+};
+
+// ---------------ADMIN ONLY------------------------
+// Admin: Create a user
 exports.createUser = async (req,res) => {
+    // check if the roles selected exists in the list of avaliable roles 
+    if (req.body.grp.length > 0) {
+        try {
+            const query3 = `SELECT JSON_ARRAYAGG(groupName) AS roles FROM nodelogin.groups 
+            WHERE id IN (SELECT MAX(id) FROM nodelogin.groups WHERE username="desc" GROUP BY groupName)
+            AND active='1';`;
+            
+            const rolesList = await getQuery.processQuery(query3, req.pool);
+
+            for (let index = 0; index < rolesList.roles.length; index++) {
+                const element = rolesList.roles[index];
+                if (!req.body.grp.includes(element)) {
+                    res.sendStatus(400);
+                }
+            }
+        } catch (error) {
+            console.log('error in verifying the rows');
+            res.sendStatus(400);
+        }
+    } 
     // hash password
     const hashNewPass = await verifyPwd.hashPass(req.body.password);
 
@@ -124,66 +210,6 @@ exports.createUser = async (req,res) => {
     }
 };
 
-// Get user email
-exports.getEmail = (req,res) => {
-    const query = `SELECT email FROM accounts WHERE username="${req.session.username}"`;
-
-    // check if username and password is correct
-    getQuery.processQuery(query, req.pool).then((rows) => {
-        // print if received the password
-        console.log('Email received: ',rows[0].email);
-        
-        res.send(rows[0].email);    
-    }).catch((err) => { 
-        // send 500 status 
-        res.status(500).send(); 
-        // Throw async to escape the promise chain
-        throw err;
-    }); 
-};
-
-// Update email
-exports.updateEmail = (req,res) => {
-    // query to update email
-    const query = `UPDATE accounts SET email="${req.body.email}" WHERE username="${req.session.username}"`;
-
-    // update email in database
-    getQuery.processQuery(query, req.pool).then((rows) => {
-        // print if received the password
-        console.log('Email updated. Response: ',rows);
-        
-        res.status(200).send();
-    }).catch((err) => { 
-        // send 500 status 
-        res.status(500).send(); 
-        // Throw async to escape the promise chain
-        throw err;
-    }); 
-};
-
-// Update password
-exports.updatePassword = async (req,res) => {
-    // hash new password
-    const newPass = await verifyPwd.hashPass(req.body.password);
-
-    // store new password
-    const query = `UPDATE accounts SET password="${newPass}" WHERE username="${req.session.username}"`;
-
-    // store password in database if username and password is correct
-    getQuery.processQuery(query, req.pool).then((rows) => {
-        // print if received the password
-        console.log('Password updated. Response: ',rows);
-        
-        res.status(200).send();
-    }).catch((err) => { 
-        // send 500 status 
-        res.status(500).send(); 
-        // Throw async to escape the promise chain
-        throw err;
-    }); 
-};
-
-// ---------------ADMIN ONLY------------------------
 // Admin: get user's email
 exports.getUserEmail = (req,res) => {
     const query = `SELECT email FROM accounts WHERE username=${req.params.user}`;
@@ -281,7 +307,32 @@ exports.enableUser = (req,res) => {
 
 // Admin: get list of group names/roles
 exports.getGrpNames = async (req,res) => {
-    const query = `SELECT JSON_ARRAYAGG(groupName) AS roles FROM nodelogin.groups WHERE username="desc" AND active='1'`;
+    const query = `SELECT JSON_ARRAYAGG(groupName) AS roles FROM nodelogin.groups 
+    WHERE id IN (SELECT MAX(id) FROM nodelogin.groups WHERE username="desc" GROUP BY groupName)
+    AND active='1'; `;
+
+    getQuery.processQuery(query, req.pool).then((rows) => {
+        // print if received the password
+        console.log('Retrieved list of users.');
+        
+        res.send(rows);
+    }).catch((err) => { 
+        // send 500 status 
+        res.status(500).send(); 
+        // Throw async to escape the promise chain
+        throw err;
+    }); 
+};
+
+// Admin: get list of group names/roles BY USERNAME
+exports.getGrpNamesByUser = async (req,res) => {
+    const query = `SELECT json_arrayagg(groupName) AS roles FROM nodelogin.groups 
+    WHERE id IN (SELECT MAX(id) FROM nodelogin.groups WHERE username="${req.params.username}" GROUP BY groupName)
+    AND active='1'
+    AND groupName in (
+        SELECT groupName FROM nodelogin.groups 
+        WHERE id IN (SELECT MAX(id) FROM nodelogin.groups WHERE username="desc" GROUP BY groupName)
+        AND active='1');`;
 
     getQuery.processQuery(query, req.pool).then((rows) => {
         // print if received the password
@@ -297,106 +348,107 @@ exports.getGrpNames = async (req,res) => {
 };
 
 // Admin: get the list of users details with role
-exports.getUserList = (req,res) => {
-    const query = `SELECT nodelogin.accounts.username, nodelogin.accounts.inactive,
-    nodelogin.accounts.email,
-    JSON_ARRAYAGG(nodelogin.groups.groupName) AS roles
-    FROM nodelogin.accounts 
-    LEFT JOIN nodelogin.groups
-    ON nodelogin.groups.username = nodelogin.accounts.username
-    GROUP BY nodelogin.accounts.username;`;
+exports.getUsersList = async (req, res) => {
+    // query to get users with details
+    const query1 = 'SELECT username, inactive, email FROM nodelogin.accounts ORDER BY username;';
+    // query to get users with roles 
+    
+    try {
+        let userList = await getQuery.processQuery(query1, req.pool);
+        //const roleList = await getQuery.processQuery(query2, req.pool);
 
-    // update the database to set inactive to false
-    getQuery.processQuery(query, req.pool).then((rows) => {
-        // print if received the password
-        console.log('Retrieved list of users.');
-        
-        res.send(rows);
-    }).catch((err) => { 
-        // send 500 status 
-        res.status(500).send(); 
-        // Throw async to escape the promise chain
-        throw err;
-    }); 
+        // modify to add roles in the userList
+        // let n = 0;
+        // for (let index = 0; index < userList.length; index++) {
+        //     userList[index].roles = [];
+            
+        //     // push roles in each username
+        //     while (userList[index]["username"] === roleList[n]["username"]) {
+        //         userList[index].roles.push(roleList[n]["roles"]);
+        //         if (n < roleList.length-1) {
+        //             n++;
+        //         } else {
+        //             break;
+        //         }
+        //     }
+        //     //console.log(userList[index])
+        // }
+
+        for (let index = 0; index < userList.length; index++) {
+            const element = userList[index].username;
+
+            const query2 = `SELECT json_arrayagg(groupName) AS roles FROM nodelogin.groups 
+            WHERE id IN (SELECT MAX(id) FROM nodelogin.groups WHERE username="${element}" GROUP BY groupName)
+            AND active='1'
+            AND groupName in (
+                SELECT groupName FROM nodelogin.groups 
+                WHERE id IN (SELECT MAX(id) FROM nodelogin.groups WHERE username="desc" GROUP BY groupName)
+                AND active='1');`;
+
+            // find the roles of each user 
+            const roles = await getQuery.processQuery(query2, req.pool);
+            userList[index].roles = roles.roles;
+        }
+        res.status(200).send(userList);
+    } catch (error) {
+        console.log('Failed to get list of users with their roles\n',error)
+        res.sendStatus(500);
+    }
 };
 
 // Admin: get the list of users BY ROLE
-exports.getUserListByRole = (req,res) => {
-    // query to get the users with the role
-    const query1 = `SELECT nodelogin.groups.username FROM nodelogin.groups WHERE groupName='${req.body.roles}' AND active='1';`;
-    console.log('req: ',req.body, ",")
-    
-    // get the list of users that has the role from the database
-    getQuery.processQuery(query1, req.pool).then((rows) => {
-        // print if received the password
-        console.log('Retrieved list of users with the role.');
-        // arr = rows;
-        
-        // format the query in a string 
-        const list = rows;
-        var str = '(';
-        if ((list[0] != '')|| (list[0] != "")){
-            console.log('reach here')
-            for (let index = 0; index < list.length; index++) {
-                const element = list[index].username;
-                if (element != 'desc') {
-                    if (index == list.length-1) {
-                        const value = `'${element}')`;
-                        str = str.concat(value.toString());
-                    } else {
-                        const value = `'${element}',`;
-                        str = str.concat(value.toString());
-                    }
+exports.getUserListByRole = async (req,res) => {
+    // query to get users with details
+    const query1 = 'SELECT username, inactive, email FROM nodelogin.accounts ORDER BY username;';
+    // query to get users with roles 
+    const query2 = `SELECT DISTINCT username, groupName AS roles FROM nodelogin.groups 
+    WHERE
+        active='1'
+    AND groupName in (
+        SELECT groupName FROM nodelogin.groups
+        WHERE id IN (SELECT MAX(id) FROM nodelogin.groups WHERE username="desc" GROUP BY groupName)
+        AND active='1')
+    AND NOT username="desc"
+    ORDER BY username;`;
+    try {
+        let userList = await getQuery.processQuery(query1, req.pool);
+        const roleList = await getQuery.processQuery(query2, req.pool);
+
+        // modify to add roles in the userList
+        let n = 0;
+        for (let index = 0; index < userList.length; index++) {
+            userList[index].roles = [];
+            
+            // push roles in each username
+            while (userList[index]["username"] === roleList[n]["username"]) {
+                userList[index].roles.push(roleList[n]["roles"]);
+                if (n < roleList.length-1) {
+                    n++;
+                } else {
+                    break;
                 }
             }
         }
-        console.log('str: ',str) 
-        // return empty array if there is no user with the role
-        if (str ==='(') {res.send([]);} 
-
-        // query to get the users' details
-        const query2 = `SELECT nodelogin.accounts.username, nodelogin.accounts.inactive,
-        nodelogin.accounts.email,
-        JSON_ARRAYAGG(nodelogin.groups.groupName) AS roles
-        FROM nodelogin.accounts 
-        LEFT JOIN nodelogin.groups
-        ON nodelogin.groups.username = nodelogin.accounts.username
-        WHERE nodelogin.accounts.username IN ${str}
-        GROUP BY nodelogin.accounts.username;`;
-        
-        console.log('query2 ',query2)
-        // get the list of users' details who has the role 
-        getQuery.processQuery(query2, req.pool).then((rows) => {
-            // print if received the password
-            console.log('Retrieved list of users details.',rows);
-            
-            res.send(rows);
-        }).catch((err) => { 
-            // send 500 status 
-            res.status(500).send(); 
-            // Throw async to escape the promise chain
-            throw err;
-        }); 
-    }).catch((err) => { 
-        // send 500 status 
-        res.status(500).send(); 
-        // Throw async to escape the promise chain
-        throw err;
-    }); 
+        userList = userList.filter(user => user.roles.includes(req.body.roles));
+        res.status(200).send(userList);
+    } catch (error) {
+        console.log('Failed to get list of users with their roles\n',error)
+        res.sendStatus(500);
+    }
 };
 
 // Admin: create role group
 exports.createRoleGroup = (req,res) => {
-    const query = `INSERT INTO nodelogin.groups(username,groupName) VALUES ('desc','${req.body.groupName}');`;
+    const query = `INSERT INTO nodelogin.groups(username,groupName) SELECT 'desc','${req.body.groupName}'
+    WHERE NOT EXISTS (
+        SELECT 1 FROM nodelogin.groups 
+         WHERE id IN (SELECT MAX(id) FROM nodelogin.groups WHERE username='desc' AND groupName="${req.body.groupName}" GROUP BY groupName)
+         AND active='1'
+    );`;
     
     // query to insert a role group
     getQuery.processQuery(query, req.pool).then((rows) => {
-        if (rows === "Duplicate") {
-            res.send("Duplicate role group");
-        } else {
-            // print if created role group
-            console.log('Created role group:',req.body.groupName);
-        }
+        
 
         res.status(200).send("Done");
     }).catch((err) => { 
@@ -409,7 +461,16 @@ exports.createRoleGroup = (req,res) => {
 
 // Admin: delete role group 
 exports.deleteRoleGroup = (req,res) => {
-    const query = `UPDATE nodelogin.groups SET active='0' WHERE groupName="${req.body.groupName}";`;
+    if (req.body.groupName === "Admin") {
+        res.status(400).json({ message: "You can't delete Admin role."});
+    }
+
+    const query = `INSERT INTO nodelogin.groups(username,groupName,active) SELECT 'desc','${req.body.groupName}','0'
+    WHERE NOT EXISTS (
+        SELECT 1 FROM nodelogin.groups 
+         WHERE id IN (SELECT MAX(id) FROM nodelogin.groups WHERE username="desc" AND groupName="${req.body.groupName}" GROUP BY groupName)
+         AND active='0'
+    );`;
 
     // query to delete a role group
     getQuery.processQuery(query, req.pool).then((rows) => {
@@ -446,8 +507,8 @@ exports.addUserRoleGroup = (req,res) => {
 
 // Admin: remove user from role group
 exports.removeUserRoleGroup = (req,res) => {
-    const query = `DELETE FROM nodelogin.groups WHERE username="${req.body.user}" AND groupName="${req.body.groupName}";`;
-
+    //const query = `DELETE FROM nodelogin.groups WHERE username="${req.body.user}" AND groupName="${req.body.groupName}";`;
+    const query = `INSERT INTO nodelogin.groups(username,groupName,active) VALUES ('${req.body.user}', '${req.body.groupName}', '0')`;
     // update the database to remove a row where it match username and group name
     getQuery.processQuery(query, req.pool).then((rows) => {
         // print if received the password

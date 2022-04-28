@@ -74,3 +74,67 @@
         //     // Throw async to escape the promise chain
         //     throw err;
         // }); 
+
+// Admin: get the list of users details with role
+// exports.getUserList = (req,res) => {
+//     const query = `SELECT nodelogin.accounts.username, nodelogin.accounts.inactive,
+//     nodelogin.accounts.email,
+//     JSON_ARRAYAGG(nodelogin.groups.groupName) AS roles
+//     FROM nodelogin.accounts 
+//     LEFT JOIN nodelogin.groups
+//     ON nodelogin.groups.username = nodelogin.accounts.username
+//     GROUP BY nodelogin.accounts.username;`;
+
+//     // update the database to set inactive to false
+//     getQuery.processQuery(query, req.pool).then((rows) => {
+//         // print if received the password
+//         console.log('Retrieved list of users.');
+        
+//         res.send(rows);
+//     }).catch((err) => { 
+//         // send 500 status 
+//         res.status(500).send(); 
+//         // Throw async to escape the promise chain
+//         throw err;
+//     }); 
+// };
+
+// Admin: create role group
+// exports.createRoleGroup = (req,res) => {
+//         const query = `INSERT INTO nodelogin.groups(username,groupName) VALUES ('desc','${req.body.groupName}');`;
+        
+//         // query to insert a role group
+//         getQuery.processQuery(query, req.pool).then((rows) => {
+//             if (rows === "Duplicate") {
+//                 res.send("Duplicate role group");
+//             } else {
+//                 // print if created role group
+//                 console.log('Created role group:',req.body.groupName);
+//             }
+    
+//             res.status(200).send("Done");
+//         }).catch((err) => { 
+//             // send 500 status 
+//             res.status(500).send(); 
+//             // Throw async to escape the promise chain
+//             throw err;
+//         });
+//     };
+
+// Admin: delete role group 
+// exports.deleteRoleGroup = (req,res) => {
+//         const query = `UPDATE nodelogin.groups SET active='0' WHERE groupName="${req.body.groupName}";`;
+    
+//         // query to delete a role group
+//         getQuery.processQuery(query, req.pool).then((rows) => {
+//             // print if removed role group
+//             console.log('Removed role group:',req.body.groupName);
+            
+//             res.status(200).send();
+//         }).catch((err) => { 
+//             // send 500 status 
+//             res.status(500).send(); 
+//             // Throw async to escape the promise chain
+//             throw err;
+//         });
+//     };
