@@ -24,13 +24,13 @@ ORDER BY username;
 /* Track whether the roles have been disabled. 
 'desc' roles and deleted roles have been filtered out 
 */
-SELECT * FROM nodelogin.groups 
+SELECT id, username, groupName, active FROM nodelogin.groups 
 WHERE NOT username='desc'
 AND groupName in (
 	 SELECT groupName FROM nodelogin.groups 
 	 WHERE id IN (SELECT MAX(id) FROM nodelogin.groups WHERE username="desc" GROUP BY groupName)
 	 AND active='1')
-ORDER BY username,groupName ;
+ORDER BY username,groupName;
 
 SELECT username,groupName AS roles FROM nodelogin.groups 
  WHERE id IN (SELECT MAX(id) FROM nodelogin.groups WHERE username

@@ -16,34 +16,30 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `application`
+-- Table structure for table `plan`
 --
 
-DROP TABLE IF EXISTS `application`;
+DROP TABLE IF EXISTS `plan`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `application` (
-  `App_Acronym` varchar(20) NOT NULL,
-  `App_Description` varchar(150) DEFAULT NULL,
-  `App_Rnumber` int NOT NULL AUTO_INCREMENT,
-  `App_startDate` date DEFAULT NULL,
-  `App_endDate` date DEFAULT NULL,
-  `App_permit_Open` varchar(30) DEFAULT NULL,
-  `App_permit_toDoList` varchar(30) DEFAULT NULL,
-  `App_permit_Doing` varchar(30) DEFAULT NULL,
-  `App_permit_Done` varchar(30) DEFAULT NULL,
-  PRIMARY KEY (`App_Acronym`),
-  UNIQUE KEY `App_Rnumber` (`App_Rnumber`)
+CREATE TABLE `plan` (
+  `Plan_MVP_name` varchar(20) NOT NULL,
+  `Plan_startDate` date DEFAULT NULL,
+  `Plan_endDate` date DEFAULT NULL,
+  `Plan_app_Acronym` varchar(20) DEFAULT NULL,
+  PRIMARY KEY (`Plan_MVP_name`),
+  KEY `Plan_app_Acronym` (`Plan_app_Acronym`),
+  CONSTRAINT `plan_ibfk_1` FOREIGN KEY (`Plan_app_Acronym`) REFERENCES `application` (`App_Acronym`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `application`
+-- Dumping data for table `plan`
 --
 
-LOCK TABLES `application` WRITE;
-/*!40000 ALTER TABLE `application` DISABLE KEYS */;
-/*!40000 ALTER TABLE `application` ENABLE KEYS */;
+LOCK TABLES `plan` WRITE;
+/*!40000 ALTER TABLE `plan` DISABLE KEYS */;
+/*!40000 ALTER TABLE `plan` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -55,4 +51,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-04-29 17:33:39
+-- Dump completed on 2022-04-29 17:33:38

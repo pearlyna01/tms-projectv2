@@ -28,11 +28,10 @@ CREATE TABLE `accounts` (
   `password` longtext NOT NULL,
   `email` varchar(100) NOT NULL,
   `inactive` tinyint(1) NOT NULL DEFAULT '0',
-  `group_name` varchar(100) DEFAULT 'no_group',
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`),
   UNIQUE KEY `username_UNIQUE` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=79 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -41,7 +40,7 @@ CREATE TABLE `accounts` (
 
 LOCK TABLES `accounts` WRITE;
 /*!40000 ALTER TABLE `accounts` DISABLE KEYS */;
-INSERT INTO `accounts` VALUES (0,'admin','$argon2i$v=19$m=4096,t=3,p=1$ArfHtKmtNy5jZC+157PmEg$DM7V1gJBnoKbYQMTGquCynGa8Ua9x4h+DRx297lraPE','dfsdf@email.com',0,''),(6,'member2','$argon2i$v=19$m=4096,t=3,p=1$gVeb1jYb43oUUlKm+O+G/w$/ZMO4YDWgs2nq48rolndSJSiaOc9ijnKD9oWVG3oNls','f@email.com',0,''),(7,'member3','$argon2i$v=19$m=4096,t=3,p=1$Od3RXejpzrUl9+p9ZV0raQ$VqhZB6vGyC+1Z4SFx2XfadomF9ywYTwChnmRlTl2bjQ','test@email.com',0,'TM,L'),(8,'lead1','$argon2i$v=19$m=4096,t=3,p=1$OjB14HlmDPbIYGzlNh4jZQ$okLVIhmsPHNyySWl2yzucRHimVG4kByeK8Gzw9HW/VI','email@email.o',0,'L,PM'),(19,'test','$argon2i$v=19$m=4096,t=3,p=1$BGJTTKrRmovwomKO+lP4lA$5M3p96NcLU9JiftBgwx0dSsJmGFx3gHgeqX6F1RB8sg','test@email.com',0,'no_group'),(34,'test4','$argon2i$v=19$m=4096,t=3,p=1$Kx6mmrqUCjVyNX9U3TqkHA$fGWf4umM4uHGvLKlIfPiHaj6cYv1L/FL/WI65+yGlV0','email@email.o',0,'no_group'),(35,'test2','$argon2i$v=19$m=4096,t=3,p=1$rCT1CTDVdXl+hwm07rxQug$2n0LRKgXi4TK9clJJbluqr01bKJov3w61f6UzCQ3xbQ','email@email.o',0,'no_group'),(37,'test5','$argon2i$v=19$m=4096,t=3,p=1$zYTiXmcx/Ys6yGZA3ssNvw$DNB+nsZeQi8ojC/f3upKxzxYa3MrQ90EMDd2EDCTHbg','email@email.o',0,'no_group'),(38,'chuanwu','$argon2i$v=19$m=4096,t=3,p=1$84T5/BxmtS5XzEOiZw4vkA$1/o52RxnpkzjmXmtT5I7rM2ztkCftLumA7GHZUPpD5M','test@email.com',0,'no_group'),(42,'test1','$argon2i$v=19$m=4096,t=3,p=1$Zjp+oQnRqrksYnnJ5qeauQ$A8dG2aVAloP0Qz2AN1NUlSg1GoZA3tvY3wrl0vsiJ8o','testemail@email.com',0,'no_group');
+INSERT INTO `accounts` VALUES (0,'admin','$argon2i$v=19$m=4096,t=3,p=1$sBKZTnGCmpawlmexCHmabA$jA1jeAsndnlXRoAEh0LSt8nHxw9ORzWiEpwnNeK1eu4','testemail@email.com',0),(6,'member2','$argon2i$v=19$m=4096,t=3,p=1$gVeb1jYb43oUUlKm+O+G/w$/ZMO4YDWgs2nq48rolndSJSiaOc9ijnKD9oWVG3oNls','f@email.com',0),(7,'member3','$argon2i$v=19$m=4096,t=3,p=1$Od3RXejpzrUl9+p9ZV0raQ$VqhZB6vGyC+1Z4SFx2XfadomF9ywYTwChnmRlTl2bjQ','test@email.com',1),(34,'test4','$argon2i$v=19$m=4096,t=3,p=1$Kx6mmrqUCjVyNX9U3TqkHA$fGWf4umM4uHGvLKlIfPiHaj6cYv1L/FL/WI65+yGlV0','email@email.o',0),(70,'test5','$argon2i$v=19$m=4096,t=3,p=1$4rP0LJ5TRrzouL/9QwzJMw$SSKOCKW2a0jWQ+ZCx1kOrXmzV4EAS8fb7pLC4EJDbeI','testemail@email.com',0),(76,'r','$argon2i$v=19$m=4096,t=3,p=1$l4r/vKcFxPOE5EMx5QFB3w$IXMccEUDRhwPnGt02/yxakBmdnIENLtzkRR7k7DGTVI','test@email.com',0),(77,'test1','$argon2i$v=19$m=4096,t=3,p=1$a2loQWigq11hzd3OG7In3g$DiWXa/ADMDSMjTcB07J3xeTFZBXKr4bYjwY5m285i6E','test@email.com',0),(78,'noRoles','$argon2i$v=19$m=4096,t=3,p=1$1dVrcrmfbACBBjycl9WNaw$/hXz754B0oj8B4jkPyKd/o9SMWr2sWSYxxt4FJloN/U','email@email.o',0);
 /*!40000 ALTER TABLE `accounts` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -54,4 +53,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-04-22 15:54:21
+-- Dump completed on 2022-04-29 17:33:36
