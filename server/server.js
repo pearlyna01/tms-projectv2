@@ -3,6 +3,7 @@ const logger = require('morgan');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
+const dotenv = require('dotenv');
 const app = express();
 
 // require controllers
@@ -10,6 +11,9 @@ const app = express();
 const dbControl = require('./controllers/dbcontroller');
 
 var port = process.env.PORT || 3001;
+
+// Setting up config.env file variables
+dotenv.config({path : './config/.env'})
 
 // Setup the body parser to handle form submits
 app.use(bodyParser.urlencoded({ extended: true })); 
@@ -34,7 +38,9 @@ dbControl(app);
 //apiControl(app);
 
 const user = require('./routes/user');
+const task = require('./routes/task');
 app.use('/',user);
+app.use('/',task);
 
 // listening to port
 app.listen(port, () => {

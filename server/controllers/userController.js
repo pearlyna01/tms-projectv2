@@ -1,5 +1,6 @@
 const verifyPwd = require('../modules/verifyPwd');
 const getQuery = require('../modules/getQuery');
+const { filterActive } = require('../modules/filterData');
 
 // Log in user
 exports.loginUser = async (req,res) => {
@@ -352,42 +353,30 @@ exports.getUsersList = async (req, res) => {
     // query to get users with details
     const query1 = 'SELECT username, inactive, email FROM nodelogin.accounts ORDER BY username;';
     // query to get users with roles 
+    const query2 = `SELECT id, username, groupName, active FROM nodelogin.groups 
+    WHERE NOT username='desc'
+    AND groupName in (
+    	 SELECT groupName FROM nodelogin.groups 
+    	 WHERE id IN (SELECT MAX(id) FROM nodelogin.groups WHERE username="desc" GROUP BY groupName)
+    	 AND active='1')
+    ORDER BY username,groupName;`;
     
     try {
         let userList = await getQuery.processQuery(query1, req.pool);
-        //const roleList = await getQuery.processQuery(query2, req.pool);
-
-        // modify to add roles in the userList
-        // let n = 0;
-        // for (let index = 0; index < userList.length; index++) {
-        //     userList[index].roles = [];
-            
-        //     // push roles in each username
-        //     while (userList[index]["username"] === roleList[n]["username"]) {
-        //         userList[index].roles.push(roleList[n]["roles"]);
-        //         if (n < roleList.length-1) {
-        //             n++;
-        //         } else {
-        //             break;
-        //         }
-        //     }
-        //     //console.log(userList[index])
-        // }
-
+        let roleList = await getQuery.processQuery(query2, req.pool);
+        roleList = filterActive(roleList);
+        
+        // modify to add roles in the userLists
+        let n = 0;
         for (let index = 0; index < userList.length; index++) {
-            const element = userList[index].username;
-
-            const query2 = `SELECT json_arrayagg(groupName) AS roles FROM nodelogin.groups 
-            WHERE id IN (SELECT MAX(id) FROM nodelogin.groups WHERE username="${element}" GROUP BY groupName)
-            AND active='1'
-            AND groupName in (
-                SELECT groupName FROM nodelogin.groups 
-                WHERE id IN (SELECT MAX(id) FROM nodelogin.groups WHERE username="desc" GROUP BY groupName)
-                AND active='1');`;
-
-            // find the roles of each user 
-            const roles = await getQuery.processQuery(query2, req.pool);
-            userList[index].roles = roles.roles;
+            // add roles array if user has roles
+            if (userList[index].username === roleList[n].username) {
+                userList[index].roles = roleList[n].roles;
+                // prevent n to be equal to roleList.length
+                if (n < roleList.length-1) { n++; } 
+            } else {
+                userList[index].roles = [];
+            }
         }
         res.status(200).send(userList);
     } catch (error) {

@@ -1,36 +1,36 @@
 "use strict";
-var nodemailer = require('nodemailer');
-// link https://nodemailer.com/smtp/testing/
-// Create the transporter with the required configuration for Outlook
-// change the user and pass !
-const transporter = nodemailer.createTransport({
-    host: "smtp-mail.outlook.com", // hostname
-    secureConnection: false, // TLS requires secureConnection to be false
-    port: 587, // port for secure SMTP
-    tls: {
-       ciphers:'SSLv3'
-    },
-    auth: {
-        user: '',
-        pass: ''
-    }
-});
+const nodemailer = require('nodemailer');
 
+// Function to send email notification to 'Lead' when 'Team Member' has completed task
+// Requires content = { email, subject, message }
+const send_Email = async content => {
+    const transporter = nodemailer.createTransport({
+        host : process.env.SMTP_HOST,
+        port : process.env.SMTP_PORT,
+        secure: false,
+        auth : {
+            user : process.env.SMTP_EMAIL,
+            pass : process.env.SMTP_PASSWORD
+        }
+    });
 
-// setup e-mail data
-const mailOptions = {
-    from: '"Our Code World 2" <littlemisswallflower@outlook.com>', // sender address (who sends)
-    to: 'pearlyna_lim@hotmail.com', // list of receivers (who receives)
-    subject: 'Hello', // Subject line
-    text: 'Hello world ', // plaintext body
-    html: '<b>Hello world </b><br> This is the first email sent with Nodemailer in Node.js' // html body
-};
+    const message = {
+        from : ` sender email <${process.env.SMTP_EMAIL}>`,
+        to:  content.email,
+        subject : content.subject,
+        text : content.message
+    };
 
-// send mail with defined transport object
-transporter.sendMail(mailOptions, function(error, info){
-    if(error){
-        return console.log(error);
-    }
+    // transporter.sendMail(message, function (error, info) {
+    //     if (error) {
+    //         return console.log(error);
+    //     }
 
-    console.log('Message sent: ' + info.response);
-});
+    //     return info.response;
+    // });
+
+    const test = await transporter.sendMail(message);
+    console.log(nodemailer.getTestMessageUrl(test))
+}
+
+module.exports = send_Email;

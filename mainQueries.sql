@@ -1,4 +1,4 @@
-SELECT tet* FROM nodelogin.groups;
+SELECT * FROM nodelogin.groups;
 
 /* 1. Get list of users with roles */
 /* NOTE combine the 2 queries in node.js */
@@ -15,21 +15,34 @@ SELECT DISTINCT username, groupName AS roles FROM nodelogin.groups
  WHERE 
 	 active='1'
  AND groupName in (
-	 SELECT groupName FROM nodelogin.groups 
+	 SELECT groupName  FROM nodelogin.groups 
 	 WHERE id IN (SELECT MAX(id) FROM nodelogin.groups WHERE username="desc" GROUP BY groupName)
 		AND active='1')
 AND NOT username="desc"
 ORDER BY username;
 
-SELECT * FROM nodelogin.groups GROUP BY username,groupName ORDER BY username;
-SELECT * FROM nodelogin.groups ORDER BY username;
+/* Track whether the roles have been disabled. 
+'desc' roles and deleted roles have been filtered out 
+*/
+SELECT * FROM nodelogin.groups 
+WHERE NOT username='desc'
+AND groupName in (
+	 SELECT groupName FROM nodelogin.groups 
+	 WHERE id IN (SELECT MAX(id) FROM nodelogin.groups WHERE username="desc" GROUP BY groupName)
+	 AND active='1')
+ORDER BY username,groupName ;
+
+SELECT username,groupName AS roles FROM nodelogin.groups 
+ WHERE id IN (SELECT MAX(id) FROM nodelogin.groups WHERE username
+	IN (SELECT DISTINCT username FROM nodelogin.groups) GROUP BY groupName);
+
 /* list of users and their details */
 SELECT username, inactive, email FROM nodelogin.accounts ORDER BY username,timeModified;
 
 /* 2. Get list of a user's roles */
 /* note that this also checks if the user's roles is in the list of avaliable roles */
 SELECT json_arrayagg(groupName) AS roles FROM nodelogin.groups 
- WHERE id IN (SELECT MAX(id) FROM nodelogin.groups WHERE username="test1" GROUP BY groupName)
+ WHERE id IN (SELECT MAX(id) FROM nodelogin.groups WHERE username="test4" GROUP BY groupName)
  AND active='1'
  AND groupName in (
 	 SELECT groupName FROM nodelogin.groups 

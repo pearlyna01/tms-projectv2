@@ -9,7 +9,7 @@ const AdminNav = () => {
 
     if (user.roles.includes("Admin")) {
         return (
-        <li className="nav-item dropdown ">
+        <li className="nav-item dropdown border-start border-1">
             <ul className="nav-link dropdown-toggle" 
                 data-bs-toggle="dropdown" 
                 role="button" 

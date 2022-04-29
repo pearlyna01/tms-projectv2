@@ -22,11 +22,6 @@ router.route('/getEmail').get(isAuthenticated, getEmail);
 router.route('/updateEmail').post(isAuthenticated, updateEmail);
 router.route('/updatePassword').post(isAuthenticated, updatePassword);
 
-// testing new routes
-router.route('/something').get(
-    
-);
-
 // ADMIN ROUTES 
 router.route('/createUser').post(
     isAuthenticated, 
