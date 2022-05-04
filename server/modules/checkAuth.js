@@ -42,3 +42,8 @@ exports.authorizeRoles = (roles) => {
         }
     }
 };
+
+// Check group roles/ permissions 
+exports.checkGrp = async (req, res) => {
+    
+};

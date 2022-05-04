@@ -40,7 +40,7 @@ dbControl(app);
 const user = require('./routes/user');
 const task = require('./routes/task');
 app.use('/',user);
-app.use('/',task);
+app.use('/task',task);
 
 // listening to port
 app.listen(port, () => {
