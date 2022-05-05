@@ -48,7 +48,7 @@ const Main = () => {
 
     // Handle submit
     function handleSubmitApp() {
-
+        
     }
 
     return (

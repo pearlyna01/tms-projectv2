@@ -5,17 +5,22 @@ const router = express.Router();
 const { isAuthenticated, authorizeRoles } = require('../modules/checkAuth');
 
 const { 
-    createApp, createTask, createPlan,
+    createApp, getAllApps,
+    createTask, createPlan,
     setToDo, setDoing, setDone, setClose,
     doneTask 
 } = require('../controllers/taskController');
 
+// test sending email
+
 router.route('/sendMail').put(doneTask);
 
+// Admin: get all Apps info
+router.route('/getAllApps').get(getAllApps);
 // Admin: create App
 router.route('/createApp').post(
-    // isAuthenticated, 
-    // authorizeRoles(['Admin']), 
+    isAuthenticated, 
+    authorizeRoles(['Admin']), 
     createApp
 );
 // Lead/user with createT permit: create Task

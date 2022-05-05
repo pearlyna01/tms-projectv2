@@ -1,6 +1,19 @@
-const send_Email = require('../modules/sendEmail');
+const sendEmail = require('../modules/sendEmail');
 const getQuery = require('../modules/getQuery');
 const noteGen = require('../modules/noteGen');
+
+// Admin: Get all Apps info
+exports.getAllApps = async (req, res) => {
+    const query = `SELECT App_Acronym, App_Description, App_startDate, App_endDate
+    FROM nodelogin.application;`;
+    try {
+        const result = await getQuery.processQuery(query,req.pool);
+        res.send(result);
+    } catch (error) {
+        console.log('Failed to retrieve all apps info')
+        res.sendStatus(500);
+    }
+};
 
 // Admin: Create App
 exports.createApp = async (req, res) => {
@@ -8,15 +21,20 @@ exports.createApp = async (req, res) => {
     const {
         acronym, desc,
         startDate, endDate, 
-        pOpen, pToDo, pDoing, pDone,
+        pOpen, pToDo, pDoing, pDone, pClose,
         createT, createP
     } = req.body;
+    console.log(pOpen)
+    
+    //let test = JSON.stringify(pOpen);
 
     const query = `INSERT INTO nodelogin.application(App_Acronym, App_Description, 
-        App_startDate, App_endDate, App_permit_Open, App_permit_toDoList, App_permit_Doing, App_permit_Done, 
+        App_startDate, App_endDate, 
+        App_permit_Open, App_permit_toDoList, App_permit_Doing, App_permit_Done, App_permit_Close,
         App_permit_CreateT, App_permit_CreateP) VALUES 
         ('${acronym}','${desc}','${startDate}','${endDate}', 
-        '${pOpen}','${pToDo}','${pDoing}','${pDone}','${createT}','${createP}'); `;
+        '${JSON.stringify(pOpen)}','${JSON.stringify(pToDo)}','${JSON.stringify(pDoing)}','${JSON.stringify(pDone)}',
+        '${JSON.stringify(pClose)}','${JSON.stringify(createT)}','${JSON.stringify(createP)}'); `;
 
     getQuery.processQuery(query, req.pool).then( result => {
         // send error if app acronym already exists 
@@ -112,8 +130,9 @@ exports.createPlan = async (req, res) => {
 // PM: approve new task/ set open->toDo
 exports.setToDo = async(req, res) => {
     const { taskId,owner } = req.body;
+    // const owner = req.session.username;
 
-    // check if taskid is valid and state is not 'to_do'
+    // check if taskid is valid 
     const query1 = `SELECT Task_state FROM nodelogin.task WHERE Task_id="${taskId}";`;
     try {
         const result = await getQuery.processQuery(query1,req.pool);
@@ -121,12 +140,13 @@ exports.setToDo = async(req, res) => {
         if (result.length === 0) {
             res.sendStatus(400);
         } else {
-            // make the note that task status is set to toDo
+            // make the note that task status is set to 'to-do'
             const note = noteGen.makeNote(owner, 'to-do');
             console.log(note)
 
-            // Update the status of the task = to-do
-            const query2 = `UPDATE nodelogin.task SET Task_state='to_do', Task_notes=CONCAT('${note}',Task_notes) 
+            // Update the status of the task=to-do, audit trail, task_owner 
+            const query2 = `UPDATE nodelogin.task SET Task_state='to_do', Task_notes=CONCAT('${note}',Task_notes),
+            Task_owner='${owner}' 
             WHERE Task_id='${taskId}';`;
 
             // Update the task
@@ -142,8 +162,9 @@ exports.setToDo = async(req, res) => {
 // Team member: working on task/ toDo->Doing
 exports.setDoing = async(req, res) => {
     const { taskId,owner } = req.body;
+    //const owner = req.session.username;
 
-    // check if taskid is valid and state is not 'to_do'
+    // check if taskid is valid
     const query1 = `SELECT Task_state FROM nodelogin.task WHERE Task_id="${taskId}";`;
     try {
         const result = await getQuery.processQuery(query1,req.pool);
@@ -151,12 +172,13 @@ exports.setDoing = async(req, res) => {
         if (result.length === 0) {
             res.sendStatus(400);
         } else {
-            // make the note that task status is set to toDo
+            // make the note that task status is set to Doing
             const note = noteGen.makeNote(owner, 'doing');
             console.log(note)
 
-            // Update the status of the task = to-do
-            const query2 = `UPDATE nodelogin.task SET Task_state='doing', Task_notes=CONCAT('${note}',Task_notes) 
+            // Update the status of the task=doing, audit trail, task_owner
+            const query2 = `UPDATE nodelogin.task SET Task_state='doing', Task_notes=CONCAT('${note}',Task_notes),
+            Task_owner='${owner}' 
             WHERE Task_id='${taskId}';`;
 
             // Update the task
@@ -172,23 +194,31 @@ exports.setDoing = async(req, res) => {
 // Team member: working on task/ toDo->Doing
 exports.setDone = async(req, res) => {
     const { taskId,owner } = req.body;
+    //const owner = req.session.username;
 
-    // send email notification to Lead when team member has completed
-
-    // check if taskid is valid and state is not 'to_do'
-    const query1 = `SELECT Task_state FROM nodelogin.task WHERE Task_id="${taskId}";`;
+    // check if taskid is valid
+    const query1 = `SELECT Task_state,Task_creator,Task_name FROM nodelogin.task WHERE Task_id="${taskId}";`;
     try {
         const result = await getQuery.processQuery(query1,req.pool);
         // send status 400 if task don't exist
         if (result.length === 0) {
             res.sendStatus(400);
         } else {
-            // make the note that task status is set to toDo
+            // get the email and send email to the task_creator 
+            const query3 = `SELECT email FROM nodelogin.accounts WHERE username='${result[0].Task_creator}';`;
+            const result2 = await getQuery.processQuery(query3,req.pool);
+            if (result2.length==0) {
+                console.log('no email')
+            }
+            await sendEmail.sendNotif(result2[0].email, result[0].Task_name);
+
+            // make the note that task status is set to Done
             const note = noteGen.makeNote(owner, 'done');
             console.log(note)
 
-            // Update the status of the task = to-do
-            const query2 = `UPDATE nodelogin.task SET Task_state='done', Task_notes=CONCAT('${note}',Task_notes) 
+           // Update the status of the task=done, audit trail, task_owner 
+            const query2 = `UPDATE nodelogin.task SET Task_state='done', Task_notes=CONCAT('${note}',Task_notes),
+            Task_owner='${owner}'
             WHERE Task_id='${taskId}';`;
 
             // Update the task
@@ -196,6 +226,7 @@ exports.setDone = async(req, res) => {
             res.sendStatus(200);
         }
     } catch (error) {
+        console.log(error)
         res.sendStatus(500);
     }
 };
@@ -204,10 +235,9 @@ exports.setDone = async(req, res) => {
 // Lead: confirm the task to close
 exports.setClose = async(req, res) => {
     const { taskId,owner } = req.body;
+    // const owner = req.session.username;
 
-    // send email notification to Lead when team member has completed
-
-    // check if taskid is valid and state is not 'to_do'
+    // check if taskid is valid
     const query1 = `SELECT Task_state FROM nodelogin.task WHERE Task_id="${taskId}";`;
     try {
         const result = await getQuery.processQuery(query1,req.pool);
@@ -215,12 +245,13 @@ exports.setClose = async(req, res) => {
         if (result.length === 0) {
             res.sendStatus(400);
         } else {
-            // make the note that task status is set to toDo
-            const note = noteGen.makeNote(owner, 'done');
+            // make the note that task status is set to close
+            const note = noteGen.makeNote(owner, 'close');
             console.log(note)
 
-            // Update the status of the task = to-do
-            const query2 = `UPDATE nodelogin.task SET Task_state='done', Task_notes=CONCAT('${note}',Task_notes) 
+            // Update the status of the task=close, audit trail, task_owner 
+            const query2 = `UPDATE nodelogin.task SET Task_state='close', Task_notes=CONCAT('${note}',Task_notes),
+            Task_owner='${owner}' 
             WHERE Task_id='${taskId}';`;
 
             // Update the task
@@ -242,7 +273,7 @@ exports.doneTask = async (req,res) => {
     };
     console.log(process.env.SMTP_TO_EMAIL);
     try {
-        const test = await send_Email(Message);
+        const test = await sendEmail.sendEmail(Message);
         console.log('TESTING EMAIL RESPONSE========\n',test);
         res.sendStatus(200);
     } catch (error) {

@@ -57,7 +57,7 @@ const UserNav = () => {
           <li className="nav-item">
             <h5 className="nav-link active me-4" style={{margin:0, fontWeight:"bold"}}>{user.username}</h5>
           </li>
-          {console.log(user)}
+          {/* {console.log(user)} */}
           {/* <!--sign out button--> */}
           <form onClick={handleLogOut}>
             <li className="nav-item">

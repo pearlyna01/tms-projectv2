@@ -9,7 +9,8 @@ import CreateUser from "./components/CreateUser";
 import ManageUser from "./components/ManageUser";
 import ManageGrp from "./components/ManageGrp";
 import ForbidPage from "./components/ForbidPage";
-
+import ManageApps from "./components/ManageApps";
+import CreateApp from "./components/CreateApp";
 import Main from "./components/Main";
 
 import RequireAuth from "./RequireAuth";
@@ -27,6 +28,9 @@ function App() {
           
           <Route element={<RequireAuth role="admin"/>}>
             
+            <Route path="/createApp" element={<CreateApp/>}/>
+            <Route path="/manageApps" element={<ManageApps />}/> 
+
             <Route path="/createUser" element={<CreateUser/>}/>
             <Route path="/manageUser" element={<ManageUser />}/> 
             <Route path="/manageGrp" element={<ManageGrp />}/>
