@@ -37,3 +37,8 @@ code {
   color: white;
   opacity: 0.8;
 }
+
+.sideBar {
+  position: absolute;
+  z-index: 1;
+}

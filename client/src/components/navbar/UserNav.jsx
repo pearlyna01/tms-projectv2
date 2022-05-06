@@ -28,7 +28,7 @@ const UserNav = () => {
   }
 
   return (
-    <nav id="nav_color" className="navbar navbar-expand-lg navbar-dark bg-darkblue">
+    <nav id="nav_color" className="navbar navbar-expand-lg sticky-top navbar-dark bg-darkblue">
     <div className="container">
       <h2 className="navbar-brand">Task Management</h2>
       
