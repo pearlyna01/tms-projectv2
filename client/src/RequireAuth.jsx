@@ -14,7 +14,7 @@ function RequireAuth({ role }) {
 
     // Redirect to the login page but save the location 
     // so that the user can go back to the location after login
-    return !user.isAuthenticated ? <Navigate to="/" state={{ from: location }} /> : <Outlet /> 
+    return !user.isAuthenticated ? <Navigate to="/login" state={{ from: location }} /> : <Outlet /> 
     // default role = "user"
     
 }

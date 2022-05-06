@@ -2,6 +2,18 @@ const sendEmail = require('../modules/sendEmail');
 const getQuery = require('../modules/getQuery');
 const noteGen = require('../modules/noteGen');
 
+// Get all plans of an App
+exports.getAppPlans = async(req, res) => {
+    const query = `SELECT Plan_MVP_name FROM nodelogin.plan WHERE Plan_app_Acronym='${req.params.app}';`;
+    try {
+        const result = await getQuery.processQuery(query, req.pool);
+        res.send(result);
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(500);
+    }
+};
+
 // Admin: Get all Apps info
 exports.getAllApps = async (req, res) => {
     const query = `SELECT App_Acronym, App_Description, App_startDate, App_endDate
@@ -52,12 +64,11 @@ exports.createApp = async (req, res) => {
     }); 
 };
 
-// TODO: change owner to the req.session.username
 // Lead: Create Task
 exports.createTask = async (req, res) => {
     // parse user input
-    const { name, desc, plan, app, owner } = req.body;
-    //const owner = req.session.username;
+    const { name, desc, plan, app } = req.body;
+    const owner = req.session.username;
 
     // create initial audit 
     const note = noteGen.makeNote(owner,'open');

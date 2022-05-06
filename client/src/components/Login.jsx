@@ -49,7 +49,7 @@ function Login(){
                 setUserAtom({username: username, isAuthenticated: true, roles:this.responseText});
 
                 // redirect to the home page.
-                navigate('/settings');
+                navigate('/');
             } 
             else if (this.readyState === 4 && this.status >= 401) {
                 // Login unsuccessful. user/password incorrect
@@ -70,13 +70,14 @@ function Login(){
 
         <div className="container">
         <div className="row">
-        <div className={`col-6 align-self-center`}>
+        <div className="col"></div>
+        <div className='col-6'>
             
             <h3 className="mt-3">Login</h3>
 
             <form onSubmit={handleSubmit}>
             {/* <!--username--> */}
-            <div className="row mt-3 mb-3">
+            <div className="row mt-5 mb-3">
                 <label htmlFor="username" className="col-2 col-form-label">Username</label>
                 <div className="col-sm-7">
                 <input 
@@ -101,16 +102,18 @@ function Login(){
                     onChange={(event) => setPass(event.target.value)}
                 />
                 </div>
-
-                {/* <!--submit button--> */}
-                <div className="row mt-4">
-                <div className="col-sm-9">
-                    <button className="btn btn-primary float-end" type="submit">Login</button>
-                </div>
-                </div>
             </div>
+
+            {/* <!--submit button--> */}
+            <div className="row mt-5">
+                <button className="btn btn-primary col-sm-9 d-block fw-bold" type="submit">Login</button>
+            
+            </div>
+                
+
             </form>
         </div>
+        <div className="col"></div>
         </div>
         </div>
         </div>

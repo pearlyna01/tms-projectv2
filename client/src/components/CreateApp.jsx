@@ -1,7 +1,6 @@
 import React, { useState,useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import {BsFillCalendarEventFill} from "react-icons/bs";
 import MultiSelect from  'react-multiple-select-dropdown-lite';
 import 'react-multiple-select-dropdown-lite/dist/index.css';
 import UserNav from "./navbar/UserNav";
@@ -16,7 +15,7 @@ const CreateApp = () => {
     const nowDate = new Date();
     
     // Number of characters left in the description text box
-    const [charLeft, setCharLeft] = useState(0);
+    const [charLeft, setCharLeft] = useState(150);
     // Application Acronym Input 
     const [appAcr, setAppAcr] = useState('');
     // Application Description Input
@@ -58,7 +57,7 @@ const CreateApp = () => {
             .then(data => {
                 console.log('Success:\n', data);
                 setOptions(data[0].roles);                
-            });
+            }).catch(e => alert('failed to load group names'));
     }, []);
 
     // Handle Application description input
@@ -108,16 +107,15 @@ const CreateApp = () => {
         }));
     }
 
-  
     return (
         <>
         <UserNav />
         <div className="container">
-        <div className="row">
+        <div className="row mt-3">
         <div className="col"></div>
         <form className="col-6 p-0" onSubmit={handleSubmitApp}>
             <h5>Create Application Details</h5>
-            
+            <hr />
             {/* Application Acronym input */}
             <div className="row mb-3">
                 <label htmlFor="appAcronym" className="form-label">Application Acronym</label>

@@ -11,7 +11,10 @@ import ManageGrp from "./components/ManageGrp";
 import ForbidPage from "./components/ForbidPage";
 import ManageApps from "./components/ManageApps";
 import CreateApp from "./components/CreateApp";
-import Main from "./components/Main";
+
+import CreatePlan from "./components/CreatePlan";
+import CreateTask from "./components/CreateTask";
+import Dashboard from "./components/Dashboard";
 
 import RequireAuth from "./RequireAuth";
 function App() {
@@ -19,21 +22,28 @@ function App() {
     <BrowserRouter>
     <Provider>
       <Routes>
-        <Route path="/" element={<Login />}/>
-        <Route path="/test" element={<Main />}/>
-        
+        <Route path="/login" element={<Login />}/>
+
         <Route element={<RequireAuth role="user"/>}>
-          
+          <Route path="/" element={<Dashboard />}/>
           <Route path="/settings" element={<Settings/>}/>
-          
+          <Route path="/createPlan" element={<CreatePlan/>}/>
+          <Route path='/createTask' element={<CreateTask />}/>
+
+
+
+          {/* ----ADMIN ONLY routes----- */}
           <Route element={<RequireAuth role="admin"/>}>
             
+            {/* app management  */}
             <Route path="/createApp" element={<CreateApp/>}/>
             <Route path="/manageApps" element={<ManageApps />}/> 
 
+            {/* user management */}
             <Route path="/createUser" element={<CreateUser/>}/>
             <Route path="/manageUser" element={<ManageUser />}/> 
             <Route path="/manageGrp" element={<ManageGrp />}/>
+
           </Route>
         
         </Route>

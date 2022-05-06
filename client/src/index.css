@@ -16,3 +16,24 @@ code {
   background-color: darkslateblue;
   color: white;
 }
+
+#taskCol {
+  min-height: 450px;
+}
+
+.btn-colorT {
+  color: white;
+  border-color: #1E90FF;
+  background-color: #1E90FF;
+}
+
+.btn-colorP {
+  color: white;
+  border-color: #8A2BE2;
+  background-color: #8A2BE2;
+}
+
+.btn-fade:hover {
+  color: white;
+  opacity: 0.8;
+}

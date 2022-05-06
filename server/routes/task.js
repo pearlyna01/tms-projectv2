@@ -8,12 +8,15 @@ const {
     createApp, getAllApps,
     createTask, createPlan,
     setToDo, setDoing, setDone, setClose,
+    getAppPlans,
     doneTask 
 } = require('../controllers/taskController');
 
-// test sending email
-
+// test sending email NEED TO REMOVE THIS
 router.route('/sendMail').put(doneTask);
+
+// get all plans of an app
+router.route('/getAppPlans/:app').get( getAppPlans);
 
 // Admin: get all Apps info
 router.route('/getAllApps').get(getAllApps);
@@ -31,6 +34,8 @@ router.route('/createTask').post(
 router.route('/createPlan').post(
     createPlan
 );
+
+
 // PM/user with todo permit: approve task/ open->toDo
 router.route('/setToDo').put(
     setToDo

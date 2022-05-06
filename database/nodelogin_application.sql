@@ -25,15 +25,18 @@ DROP TABLE IF EXISTS `application`;
 CREATE TABLE `application` (
   `App_Acronym` varchar(20) NOT NULL,
   `App_Description` varchar(150) DEFAULT NULL,
-  `App_Rnumber` int NOT NULL AUTO_INCREMENT,
+  `App_Rnumber` int NOT NULL DEFAULT '0',
   `App_startDate` date DEFAULT NULL,
   `App_endDate` date DEFAULT NULL,
-  `App_permit_Open` varchar(30) DEFAULT NULL,
-  `App_permit_toDoList` varchar(30) DEFAULT NULL,
-  `App_permit_Doing` varchar(30) DEFAULT NULL,
-  `App_permit_Done` varchar(30) DEFAULT NULL,
-  PRIMARY KEY (`App_Acronym`),
-  UNIQUE KEY `App_Rnumber` (`App_Rnumber`)
+  `App_permit_Open` json DEFAULT NULL,
+  `App_permit_toDoList` json DEFAULT NULL,
+  `App_permit_Doing` json DEFAULT NULL,
+  `App_permit_Done` json DEFAULT NULL,
+  `App_permit_Close` json DEFAULT NULL,
+  `App_permit_CreateT` json DEFAULT NULL,
+  `App_permit_CreateP` json DEFAULT NULL,
+  `Audit` longtext,
+  PRIMARY KEY (`App_Acronym`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -43,6 +46,7 @@ CREATE TABLE `application` (
 
 LOCK TABLES `application` WRITE;
 /*!40000 ALTER TABLE `application` DISABLE KEYS */;
+INSERT INTO `application` VALUES ('ACRO','test value',0,'2003-04-23','2003-04-05','[\"Admin\"]','[\"Admin\"]','[\"Admin\"]','[\"Admin\"]',NULL,'[\"Admin\"]','[\"Admin\"]',NULL),('ACRO2','test value',7,'2003-04-23','2003-04-06','[\"Admin\"]','[\"Admin\"]','[\"Admin\"]','[\"Admin\"]',NULL,'[\"Admin\"]','[\"Admin\"]',NULL),('ACRO3','test value',2,'2003-04-23','2003-04-06','[\"Admin\"]','[\"Admin\"]','[\"Admin\"]','[\"Admin\", \"Project Lead\"]',NULL,'[\"Admin\"]','[\"Admin\"]',NULL),('APP','description here',0,'2022-06-12','2022-06-20','[\"Admin\", \"Project Lead\"]','[\"Admin\", \"Project Lead\"]','[\"Admin\"]','[\"Admin\"]',NULL,'[\"Admin\"]','[\"Admin\"]',NULL),('APP0','sdfsdfsdf',0,'2022-05-05','2022-05-05','[\"Admin\", \"Lead\", \"Project Manager\"]','[\"Team Member\", \"Lead\"]','[\"Team Member\", \"Lead\", \"Admin\"]','[\"Lead\", \"Team Member\", \"Project Manager\"]','[\"Team Member\", \"Lead\", \"Project Manager\"]','[\"Lead\", \"Team Member\", \"Project Manager\"]','[\"Team Member\", \"Admin\"]',NULL);
 /*!40000 ALTER TABLE `application` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -55,4 +59,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-04-29 17:33:39
+-- Dump completed on 2022-05-06 17:09:21
