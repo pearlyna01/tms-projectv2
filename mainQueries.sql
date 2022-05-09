@@ -42,7 +42,7 @@ SELECT username, inactive, email FROM nodelogin.accounts ORDER BY username,timeM
 /* 2. Get list of a user's roles */
 /* note that this also checks if the user's roles is in the list of avaliable roles */
 SELECT json_arrayagg(groupName) AS roles FROM nodelogin.groups 
- WHERE id IN (SELECT MAX(id) FROM nodelogin.groups WHERE username="test4" GROUP BY groupName)
+ WHERE id IN (SELECT MAX(id) FROM nodelogin.groups WHERE username="admin" GROUP BY groupName)
  AND active='1'
  AND groupName in (
 	 SELECT groupName FROM nodelogin.groups 
