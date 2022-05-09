@@ -1,6 +1,8 @@
 const sendEmail = require('../modules/sendEmail');
 const getQuery = require('../modules/getQuery');
 const noteGen = require('../modules/noteGen');
+const { checkUserPerm } = require('../modules/checkAuth'); 
+
 
 // Get all plans of an App
 exports.getAppPlans = async(req, res) => {
@@ -14,7 +16,7 @@ exports.getAppPlans = async(req, res) => {
     }
 };
 
-// Admin: Get all Apps info
+// Get all Apps info
 exports.getAllApps = async (req, res) => {
     const query = `SELECT App_Acronym, App_Description, App_startDate, App_endDate
     FROM nodelogin.application;`;
@@ -64,11 +66,18 @@ exports.createApp = async (req, res) => {
     }); 
 };
 
+// ------- with checkPerm function---------------------
 // Lead: Create Task
 exports.createTask = async (req, res) => {
+try {
+    const checkVal = await checkUserPerm(req,'createTask');
+    // send status 403 if user don't have the permission to do so
+    if (checkVal === false) {
+        res.sendStatus(403);
+    } else {
+
     // parse user input
-    const { name, desc, plan, app } = req.body;
-    const owner = req.session.username;
+    const { name, desc, plan, app, owner } = req.body;
 
     // create initial audit 
     const note = noteGen.makeNote(owner,'open');
@@ -108,10 +117,22 @@ exports.createTask = async (req, res) => {
         console.log(error);
         res.sendStatus(500);
     }
+}
+} catch (error) {
+    console.log(error)
+    res.sendStatus(500);
+}   
 };
 
 // PM: Create Plan
 exports.createPlan = async (req, res) => {
+try {
+    const checkVal = await checkUserPerm(req,'createPlan');
+    // send status 403 if user don't have the permission to do so
+    if (checkVal === false) {
+        res.sendStatus(403);
+    } else {
+    
     const { name, startDate, endDate, app } = req.body;
 
     // queries
@@ -135,13 +156,24 @@ exports.createPlan = async (req, res) => {
     } catch (error) {
         res.sendStatus(400);
     }
+}
+} catch (error) {
+    console.log(error)
+    res.sendStatus(500);
+}   
 };
 
-// TODO: change owner to the req.session.username
 // PM: approve new task/ set open->toDo
 exports.setToDo = async(req, res) => {
-    const { taskId,owner } = req.body;
-    // const owner = req.session.username;
+try {
+    const checkVal = await checkUserPerm(req,'createToDo');
+    // send status 403 if user don't have the permission to do so
+    if (checkVal === false) {
+        res.sendStatus(403);
+    } else {
+    
+    const { taskId } = req.body;
+    const owner = req.session.username;
 
     // check if taskid is valid 
     const query1 = `SELECT Task_state FROM nodelogin.task WHERE Task_id="${taskId}";`;
@@ -156,8 +188,7 @@ exports.setToDo = async(req, res) => {
             console.log(note)
 
             // Update the status of the task=to-do, audit trail, task_owner 
-            const query2 = `UPDATE nodelogin.task SET Task_state='to_do', Task_notes=CONCAT('${note}',Task_notes),
-            Task_owner='${owner}' 
+            const query2 = `UPDATE nodelogin.task SET Task_state='to_do', Task_notes=CONCAT('${note}',Task_notes)
             WHERE Task_id='${taskId}';`;
 
             // Update the task
@@ -167,13 +198,24 @@ exports.setToDo = async(req, res) => {
     } catch (error) {
         res.sendStatus(500);
     }
+}
+} catch (error) {
+    console.log(error)
+    res.sendStatus(500);
+}  
 };
 
-// TODO: change owner to the req.session.username
 // Team member: working on task/ toDo->Doing
 exports.setDoing = async(req, res) => {
-    const { taskId,owner } = req.body;
-    //const owner = req.session.username;
+try {
+    const checkVal = await checkUserPerm(req,'setDoing');
+    // send status 403 if user don't have the permission to do so
+    if (checkVal === false) {
+        res.sendStatus(403);
+    } else {
+
+    const { taskId } = req.body;
+    const owner = req.session.username;
 
     // check if taskid is valid
     const query1 = `SELECT Task_state FROM nodelogin.task WHERE Task_id="${taskId}";`;
@@ -188,8 +230,7 @@ exports.setDoing = async(req, res) => {
             console.log(note)
 
             // Update the status of the task=doing, audit trail, task_owner
-            const query2 = `UPDATE nodelogin.task SET Task_state='doing', Task_notes=CONCAT('${note}',Task_notes),
-            Task_owner='${owner}' 
+            const query2 = `UPDATE nodelogin.task SET Task_state='doing', Task_notes=CONCAT('${note}',Task_notes) 
             WHERE Task_id='${taskId}';`;
 
             // Update the task
@@ -199,13 +240,24 @@ exports.setDoing = async(req, res) => {
     } catch (error) {
         res.sendStatus(500);
     }
+}
+} catch (error) {
+    console.log(error)
+    res.sendStatus(500);
+}  
 };
 
-// TODO: change owner to the req.session.username
 // Team member: working on task/ toDo->Doing
 exports.setDone = async(req, res) => {
-    const { taskId,owner } = req.body;
-    //const owner = req.session.username;
+try {
+    const checkVal = await checkUserPerm(req,'setDone');
+    // send status 403 if user don't have the permission to do so
+    if (checkVal === false) {
+        res.sendStatus(403);
+    } else {
+
+    const { taskId } = req.body;
+    const owner = req.session.username;
 
     // check if taskid is valid
     const query1 = `SELECT Task_state,Task_creator,Task_name FROM nodelogin.task WHERE Task_id="${taskId}";`;
@@ -228,8 +280,7 @@ exports.setDone = async(req, res) => {
             console.log(note)
 
            // Update the status of the task=done, audit trail, task_owner 
-            const query2 = `UPDATE nodelogin.task SET Task_state='done', Task_notes=CONCAT('${note}',Task_notes),
-            Task_owner='${owner}'
+            const query2 = `UPDATE nodelogin.task SET Task_state='done', Task_notes=CONCAT('${note}',Task_notes)
             WHERE Task_id='${taskId}';`;
 
             // Update the task
@@ -240,13 +291,24 @@ exports.setDone = async(req, res) => {
         console.log(error)
         res.sendStatus(500);
     }
+}
+} catch (error) {
+    console.log(error)
+    res.sendStatus(500);
+}  
 };
 
-// TODO: change owner to the req.session.username
 // Lead: confirm the task to close
 exports.setClose = async(req, res) => {
-    const { taskId,owner } = req.body;
-    // const owner = req.session.username;
+try {
+    const checkVal = await checkUserPerm(req,'setClose');
+    // send status 403 if user don't have the permission to do so
+    if (checkVal === false) {
+        res.sendStatus(403);
+    } else {
+
+    const { taskId } = req.body;
+    const owner = req.session.username;
 
     // check if taskid is valid
     const query1 = `SELECT Task_state FROM nodelogin.task WHERE Task_id="${taskId}";`;
@@ -261,8 +323,7 @@ exports.setClose = async(req, res) => {
             console.log(note)
 
             // Update the status of the task=close, audit trail, task_owner 
-            const query2 = `UPDATE nodelogin.task SET Task_state='close', Task_notes=CONCAT('${note}',Task_notes),
-            Task_owner='${owner}' 
+            const query2 = `UPDATE nodelogin.task SET Task_state='close', Task_notes=CONCAT('${note}',Task_notes)
             WHERE Task_id='${taskId}';`;
 
             // Update the task
@@ -272,8 +333,14 @@ exports.setClose = async(req, res) => {
     } catch (error) {
         res.sendStatus(500);
     }
+}
+} catch (error) {
+    console.log(error)
+    res.sendStatus(500);
+}  
 };
 
+// UNUSED function
 // Team member: completes task
 exports.doneTask = async (req,res) => {
     // notification message to send

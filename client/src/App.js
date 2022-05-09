@@ -1,7 +1,7 @@
 // This file contains the links to the web pages
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Provider } from "jotai";
-
+import { render } from "react-dom";
 // webpages here
 import Login from "./components/Login";
 import Settings from "./components/Settings";
@@ -10,7 +10,11 @@ import ManageUser from "./components/ManageUser";
 import ManageGrp from "./components/ManageGrp";
 import ForbidPage from "./components/ForbidPage";
 import ManageApps from "./components/ManageApps";
+
+
+
 import CreateApp from "./components/CreateApp";
+import ViewTasks from "./components/ViewTasks";
 
 import CreatePlan from "./components/CreatePlan";
 import CreateTask from "./components/CreateTask";
@@ -30,7 +34,7 @@ function App() {
           <Route path="/createPlan" element={<CreatePlan/>}/>
           <Route path='/createTask' element={<CreateTask />}/>
 
-
+          <Route path='/dashboard/:app' element={<ViewTasks/>} />
 
           {/* ----ADMIN ONLY routes----- */}
           <Route element={<RequireAuth role="admin"/>}>
