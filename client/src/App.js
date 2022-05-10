@@ -31,8 +31,9 @@ function App() {
         <Route element={<RequireAuth role="user"/>}>
           <Route path="/" element={<Dashboard />}/>
           <Route path="/settings" element={<Settings/>}/>
-          <Route path="/createPlan" element={<CreatePlan/>}/>
-          <Route path='/createTask' element={<CreateTask />}/>
+
+          <Route path="/createPlan/:app" element={<CreatePlan/>}/>
+          <Route path='/createTask/:app' element={<CreateTask />}/>
 
           <Route path='/dashboard/:app' element={<ViewTasks/>} />
 

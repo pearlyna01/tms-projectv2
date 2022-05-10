@@ -3,9 +3,6 @@ import UserNav from "./navbar/UserNav";
 import React, { useState } from "react";
 import { useNavigate,  Link } from 'react-router-dom';
 
-class ListApps extends React.Component {
-
-}
 class Dashboard extends React.Component {
     constructor(props) {
         super(props);
@@ -23,38 +20,17 @@ class Dashboard extends React.Component {
                 alert('unable to fetch app')
                 console.log(err)
             } );
-        
-    }
-    //const navigate = useNavigate();
-    //  linkTask() {
-    //     navigate('/createTask');
-    // }
-    // linkPlan() {
-    //     let navigateL
-    //     useNavigate('/createPlan');
-    // }
-
-    // Handle submit
-     handleSubmitApp() {
-        
     }
 
     render() {
-        const arr = this.state.dataFetch;
+    const arr = this.state.dataFetch;
+    
     if (this.state.isLoaded) {
-        
     
     return (
         <>
         <UserNav />
-        {/* <nav className="navbar navbar-light bg-light flex-column align-items-stretch p-3 col-1">
-            <h5 className="navbar-brand">Apps List</h5>
-            <nav className="nav nav-pills flex-column">
-                <a className="nav-link  active" >Item 1</a>
-                <a className="nav-link" >Item 2</a>
-                <a className="nav-link" >Item 3</a>
-            </nav>
-        </nav> */}
+
         <div className="container">
             <h3 className="fw-bold mt-2">Dashboard</h3>
             <div className="row">
@@ -74,7 +50,7 @@ class Dashboard extends React.Component {
                                     </h5>
                                     <p className="card-subtitle mb-2 text-muted"> {row.App_Description} </p>
                                     
-                                    <pre class="card-text">
+                                    <pre className="card-text">
                                         Start Date: {sDate} <br />
                                         End date:   {eDate}
                                     </pre>

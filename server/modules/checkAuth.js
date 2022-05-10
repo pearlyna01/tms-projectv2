@@ -122,7 +122,18 @@ async function listGroups(username, pool) {
         }).catch( err => reject(err) );
     });
 }
-// returns list of users in the permissions
+// exporting listGroups function
+exports.userGrps = async (user, pool) => {
+    try {
+        const result = await listGroups(user,pool);
+        return result;
+    } catch (error) {
+        console.log('something went wrong with getting user groups')
+        console.log(error);
+    }
+};
+
+// returns list of users in the permissions based on the type of permission
 // parameters : permmission type, application acronym, req.pool
 async function checkPerm(permType, app, user, pool) {
     const query = `SELECT ${permType} FROM nodelogin.application WHERE App_Acronym='${app}';`;
@@ -174,7 +185,7 @@ exports.checkUserPerm = async (req, action) => {
                     });
                 break;
             case 'setToDo':
-                checkPerm('App_permit_ToDo', req.body.app, req.session.username, req.pool)
+                checkPerm('App_permit_ToDoList', req.body.app, req.session.username, req.pool)
                     .then(result => {
                         if (result === true) { resolve(true); }
                         else { resolve(false); }

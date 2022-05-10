@@ -1,19 +1,112 @@
 const sendEmail = require('../modules/sendEmail');
 const getQuery = require('../modules/getQuery');
 const noteGen = require('../modules/noteGen');
-const { checkUserPerm } = require('../modules/checkAuth'); 
+const { checkUserPerm,userGrps } = require('../modules/checkAuth'); 
 
+// Get what permits does the user have for the app
+exports.getUserPerms = async(req, res) => {
+    // query to get all the permissions 
+    const query = `SELECT App_permit_Open, App_permit_toDoList, App_permit_Doing, App_permit_Done, 
+    App_permit_Close, App_permit_CreateT, App_permit_CreateP FROM nodelogin.application 
+    WHERE App_Acronym='${req.params.app}'`;
+
+    try {
+        //grpNames
+        const userGroups = await userGrps(req.session.username, req.pool);
+        const perms = await getQuery.processQuery(query,req.pool);
+        
+        let arr = {};
+        for (let key in perms[0]) {
+            const row = perms[0][key];
+            const found = row.some(a => userGroups.includes(a));
+            if (found) {
+                arr[key] = true;
+            } else { 
+                arr[key] = false;
+            }
+        }
+        res.send(arr);
+    } catch (error) {
+        console.log('Something went wrong with getting the user permissions in app')
+        console.log(error)
+        res.sendStatus(500);
+    }
+};
 
 // Get all plans of an App
 exports.getAppPlans = async(req, res) => {
-    const query = `SELECT Plan_MVP_name FROM nodelogin.plan WHERE Plan_app_Acronym='${req.params.app}';`;
+    const query = `SELECT Plan_MVP_name, Plan_startDate, Plan_endDate 
+    FROM nodelogin.plan WHERE Plan_app_Acronym='${req.params.app}';`;
     try {
-        const result = await getQuery.processQuery(query, req.pool);
+        let result = await getQuery.processQuery(query, req.pool);
+        // modify to get only the dates
+        let len = result.length;
+        for (let i = 0; i < len; i++) {
+            let sDate = new Date(result[i].Plan_startDate);
+            result[i].Plan_startDate = sDate.toDateString();
+            let eDate = new Date(result[i].Plan_endDate);
+            result[i].Plan_endDate = eDate.toDateString();
+        }
+        
         res.send(result);
     } catch (error) {
         console.log(error);
         res.sendStatus(500);
     }
+};
+
+// Get all tasks of an App
+// return data that is sorted into open, to-do, doing, done, close
+// each state has their own array
+// i.e { open: [{ task1_object}...], to-do: [{ task2_object }...],....}
+exports.getAppTasks = async (req, res) => {
+    const query = `SELECT * FROM nodelogin.task WHERE Task_app_Acronym='${req.params.app}' ORDER BY Task_state;`;
+    try {
+        let result = await getQuery.processQuery(query, req.pool);
+
+        // sort data into the different states
+        let arr = { open: [], to_do: [], doing: [], done: [], close: [] };
+        result.forEach(el => {
+            switch (el.Task_state) {
+                case 'open':
+                    arr['open'].push(el);
+                    break;
+                case 'to_do':
+                    arr['to_do'].push(el);
+                    break;
+                case 'doing':
+                    arr['doing'].push(el);
+                    break;
+                case 'done':
+                    arr['done'].push(el);
+                    break;
+                case 'close':
+                    arr['close'].push(el);
+                    break;
+                default:
+                    break;
+            }
+        });
+        res.send(arr);
+    } catch (err) {
+        console.log(err);
+        res.sendStatus(500);
+    }
+};
+
+// Get an App info [app description, start date, end date]
+exports.getAppInfo = async(req, res) => {
+    const query = `SELECT App_Description, App_startDate, App_endDate FROM nodelogin.application 
+    WHERE App_Acronym='${req.params.app}';`;
+    getQuery.processQuery(query, req.pool).then(data => {
+        // modify to get only the dates
+        let sDate = new Date(data[0].App_startDate);
+        data[0].App_startDate = sDate.toDateString();
+        let eDate = new Date(data[0].App_endDate);
+        data[0].App_endDate = eDate.toDateString();
+
+        res.send(data[0]);
+    }).catch(e => res.sendStatus(500));
 };
 
 // Get all Apps info
@@ -77,7 +170,7 @@ try {
     } else {
 
     // parse user input
-    const { name, desc, plan, app, owner } = req.body;
+    const { name, desc, plan, owner, app } = req.body;
 
     // create initial audit 
     const note = noteGen.makeNote(owner,'open');
@@ -96,7 +189,7 @@ try {
         // check if task is associated with plan, else add plan name afterwards
         let hasPlan = false;
         let planInsert = '';
-        if (plan !== undefined) {
+        if (plan !== undefined || plan==='') {
             hasPlan = true;
             planInsert = `,'${plan}'`;
         }
@@ -154,7 +247,8 @@ try {
             }
         }
     } catch (error) {
-        res.sendStatus(400);
+        console.log(error)
+        res.sendStatus(500);
     }
 }
 } catch (error) {

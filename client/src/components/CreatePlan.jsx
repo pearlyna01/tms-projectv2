@@ -2,19 +2,42 @@ import React, { useState } from 'react';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import UserNav from './navbar/UserNav';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate,useParams } from 'react-router-dom';
 
 const CreatePlan = () => {
+    let params = useParams();
+    const navigate = useNavigate();
+    const linkBack = `/dashboard/${params.app}`;
+
     // start/end/current dates
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
-
     const [planName, setPlanName] = useState('');
     
     function handleSubmit(e) {
-        //const xhttp = new XMLHttpRequest();
-
+        e.preventDefault();
+        const linkForm = `../../task/createPlan`;
+        const xhttp = new XMLHttpRequest();
+        xhttp.open("POST",linkForm,true);
+        xhttp.setRequestHeader("Content-type", "application/json");
+        xhttp.onreadystatechange = function() {
+            if (this.readyState === 4 && this.status === 200) {
+                alert("successfully created plan");
+                navigate(linkBack);
+            } 
+            else if (this.readyState === 4 && this.status > 400) {
+                alert('Unable to create plan');
+            }
+        }
+        
+        xhttp.send(JSON.stringify({
+            name: planName,
+            startDate : startDate.getFullYear() + '-' + (startDate.getMonth()+1) + '-' + startDate.getDate(), 
+            endDate : endDate.getFullYear() + '-' + (endDate.getMonth()+1) + '-' + endDate.getDate(), 
+            app: params.app
+        }));
     }
+
     return(
         <>
             <UserNav />
@@ -26,8 +49,10 @@ const CreatePlan = () => {
                 <div className="row mb-2">
                     <h5 className='col'>Create Plan</h5>
                     <div className="col-auto">
-                        <Link className="fw-bold float-end" to="/">&lt; Back</Link> 
-                    </div>
+                    <button className='btn btn-outline-primary mb-2 fw-bold' onClick={() => navigate(linkBack)}>
+                        &lt; back
+                    </button>
+                </div>
                     <hr />
                 </div> 
                  {/* Application Acronym input */}
@@ -67,7 +92,6 @@ const CreatePlan = () => {
                         </button>
                     </div>
                 </div>
-                
             </form>
             <div className="col"></div>
             </div>

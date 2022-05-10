@@ -12,19 +12,28 @@ const {
     createApp, getAllApps,
     createTask, createPlan,
     setToDo, setDoing, setDone, setClose,
-    getAppPlans,
+    getAppPlans, getAppTasks, getAppInfo,
+    getUserPerms,
     doneTask 
 } = require('../controllers/taskController');
 
 // test sending email NEED TO REMOVE THIS
 // router.route('/sendMail').put(doneTask);
 
-// get all plans of an app
+// Get all plans of an app
 router.route('/getAppPlans/:app').get( getAppPlans);
 
-// Get all Apps info
-router.route('/getAllApps').get(isAuthenticated, getAllApps);
+// Get all tasks of an app
+router.route('/getAppTasks/:app').get( getAppTasks);
 
+// Get an App info 
+router.route('/getAppInfo/:app').get( getAppInfo);
+
+// Get all Apps info
+router.route('/getAllApps').get( getAllApps);
+
+// Get user permissions in an App
+router.route('/getPerms/:app').get( getUserPerms);
 
 // Lead/user with createT permit: create Task
 router.route('/createTask').post(

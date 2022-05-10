@@ -18,7 +18,7 @@ code {
 }
 
 #taskCol {
-  min-height: 450px;
+  height: 450px;
 }
 
 .btn-colorT {
@@ -41,4 +41,29 @@ code {
 .sideBar {
   position: absolute;
   z-index: 1;
+}
+
+/* for task borders */
+.border-darkblue {
+  border-color: blueviolet !important;
+}
+
+.task-height {
+  height: 130px;
+}
+
+.col-height {
+  height: 600px;
+}
+
+.task-owner {
+  background-color: #f6ecff;
+}
+
+.col-OK {
+  background-color:  #e8fdec;
+}
+
+.col-NO {
+  background-color: #fce3e3;
 }
