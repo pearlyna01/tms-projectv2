@@ -52,8 +52,13 @@ code {
   height: 130px;
 }
 
-.col-height {
+/* #ColOpen, #ColToDo, #ColDoing, #ColDone, #ColClose {
   height: 600px;
+  overflow: auto;
+} */
+
+.col-height {
+  height : 600px;
 }
 
 .task-owner {
@@ -66,4 +71,8 @@ code {
 
 .col-NO {
   background-color: #fce3e3;
+}
+
+.notesH {
+  height: 300px;
 }

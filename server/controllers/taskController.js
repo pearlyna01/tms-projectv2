@@ -25,6 +25,7 @@ exports.getUserPerms = async(req, res) => {
                 arr[key] = false;
             }
         }
+        console.log('user perms\n',arr)
         res.send(arr);
     } catch (error) {
         console.log('Something went wrong with getting the user permissions in app')

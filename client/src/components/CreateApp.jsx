@@ -113,7 +113,7 @@ const CreateApp = () => {
         <div className="container">
         <div className="row mt-3">
         <div className="col"></div>
-        <form className="col-6 p-0" onSubmit={handleSubmitApp}>
+        <form className="col-6 p-0 mb-5" onSubmit={handleSubmitApp}>
             <h5>Create Application Details</h5>
             <hr />
             {/* Application Acronym input */}
@@ -224,7 +224,7 @@ const CreateApp = () => {
                 />
             </div>
 
-            <button className="btn btn-primary float-end d-block" type="submit">Create New App</button>
+            <button className="btn btn-primary mt-2 float-end" type="submit">Create New App</button>
         </form>
         <div className="col"></div>
         </div>

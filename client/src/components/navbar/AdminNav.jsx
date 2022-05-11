@@ -23,18 +23,6 @@ const AdminNav = () => {
                     <li><Link className="dropdown-item" to="/manageGrp">Manage Groups</Link></li>
                 </ul>
             </li>
-            <li className="nav-item dropdown">
-                <ul className="nav-link dropdown-toggle" 
-                    data-bs-toggle="dropdown" 
-                    role="button" 
-                    aria-expanded="false"
-                >App Management
-                </ul>
-                <ul className="dropdown-menu">
-                    <li><Link className="dropdown-item" to="/createApp">Create App</Link></li>
-                    <li><Link className="dropdown-item" to="/manageApps">Manage Apps</Link></li>
-                </ul>
-            </li>
             </>
        
     ); 

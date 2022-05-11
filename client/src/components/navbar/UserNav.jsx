@@ -5,7 +5,7 @@ import { UserAtom, userDetails } from "../Login";
 import AdminNav from "./AdminNav";
 
 // profile and sign out function
-const UserNav = () => {
+const UserNav = ({ children }) => {
   const [user, setUserAtom ] = useAtom(UserAtom);
 
   // function to redirect to home page
@@ -28,6 +28,8 @@ const UserNav = () => {
   }
 
   return (
+    <>
+    
     <nav id="nav_color" className="navbar navbar-expand-lg sticky-top navbar-dark bg-darkblue">
     <div className="container">
       <h2 className="navbar-brand">Task Management</h2>
@@ -77,7 +79,8 @@ const UserNav = () => {
       </div> 
     </div>
     </nav>
-    
+    { children }
+    </>
   )
 } 
 

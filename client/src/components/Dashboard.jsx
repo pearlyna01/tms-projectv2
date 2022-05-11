@@ -1,14 +1,16 @@
 // dashboard for user 
-import UserNav from "./navbar/UserNav";
 import React, { useState } from "react";
 import { useNavigate,  Link } from 'react-router-dom';
+
 
 class Dashboard extends React.Component {
     constructor(props) {
         super(props);
+        
         this.state = {
             isLoaded: false,
-            dataFetch:null
+            dataFetch:null,
+            isAdmin: this.props.isAdmin
         };
     }
 
@@ -24,15 +26,25 @@ class Dashboard extends React.Component {
 
     render() {
     const arr = this.state.dataFetch;
-    
+ 
     if (this.state.isLoaded) {
     
     return (
         <>
-        <UserNav />
-
         <div className="container">
-            <h3 className="fw-bold mt-2">Dashboard</h3>
+            <div className="row mt-2">
+                <h3 className="fw-bold col-2">Dashboard</h3>
+                { this.state.isAdmin ?
+                    <div className="col-auto mt-1">
+                        <Link to='/createApp'><button className="btn btn-primary btn-sm">+ Create App</button></Link>
+                    </div> 
+                : null }
+
+            </div>
+            
+            <div>
+                
+            </div>
             <div className="row">
                 {
                     arr.map((row,index) => {
@@ -83,25 +95,5 @@ class Dashboard extends React.Component {
     }
 
 
-{/* 
 
-            </div> 
-            <div className="row">
-                <h6>Description</h6>
-                <p>
-                bero id faucibus nisl tincidunt eget nullam non nisi est sit amet facilisis magna etiam tempor orci eu lobortis elementum nibh tellus molestie nunc non blandit massa enim nec dui nunc mattis enim ut tellus elementum sagittis vitae et leo duis ut diam quam nulla porttitor massa id neque aliquam vestibulum morbi blandit cursus risus at ultrices mi tempus imperdiet nulla malesuada pellentesque elit eget gravida cum sociis natoque penatibus et magnis dis parturient montes nascetur ridiculus mus mauris vitae ultricies leo integer malesuad
-                </p>
-            </div>
-            <hr />
-            <div className="row">
-                <h6 className="fw-bold">Plans</h6>
-                <ul>
-                    <li>Test</li>
-                    <li>Test</li>
-                    <li>Test</li>
-                    <li>Test</li>
-                    <li>Test</li>
-                    <li>Test</li>
-                </ul>
-            </div> */}
 export default Dashboard;
