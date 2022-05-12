@@ -44,7 +44,8 @@ const CreatePlan = () => {
             <div className="container">
             <div className="row mt-3">
             <div className="col"></div>
-            <form className="col-4" onSubmit={handleSubmit}>
+            <div className="col-4">
+            <form  onSubmit={handleSubmit}>
                  {/* header */}  
                 <div className="row mb-2">
                     <h5 className='col'>Create Plan</h5>
@@ -93,6 +94,7 @@ const CreatePlan = () => {
                     </div>
                 </div>
             </form>
+            </div>
             <div className="col"></div>
             </div>
             </div>

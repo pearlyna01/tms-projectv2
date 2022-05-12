@@ -69,7 +69,7 @@ const CreateTask = () => {
         <div className="container">
         <div className="row mt-3">
         <div className="col"></div>
-        <form onSubmit={handleForm} className="col-auto">
+        <div className="col-auto">
             {/* header */}  
             <div className="row mb-2">
                 <h5 className='col'>Create New Task for "{params.app}"</h5>
@@ -80,6 +80,7 @@ const CreateTask = () => {
                 </div>
                 <hr />
             </div> 
+        <form onSubmit={handleForm}>
             {/* task name */}
             <div className="row mb-3">
                 <label>Task Name</label>
@@ -139,6 +140,7 @@ const CreateTask = () => {
             </div>
             
         </form>
+        </div>
         <div className="col"></div>
         </div>
         

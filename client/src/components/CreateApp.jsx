@@ -1,9 +1,12 @@
 import React, { useState,useEffect } from "react";
+
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+
 import MultiSelect from  'react-multiple-select-dropdown-lite';
 import 'react-multiple-select-dropdown-lite/dist/index.css';
-import UserNav from "./navbar/UserNav";
+
+import { useNavigate,  Link } from 'react-router-dom';
 
 const CreateApp = () => {
     // options to list the groups
@@ -35,6 +38,8 @@ const CreateApp = () => {
     const [permitCreateT, setPermitCreateT] = useState('');
     // App permit create plan
     const [permitCreateP, setPermitCreateP] = useState('');
+
+    const navigate = useNavigate();
 
     // modify the options to an array of { label:'', value:'' }
     function modifyOptions() {
@@ -84,6 +89,7 @@ const CreateApp = () => {
         xhttp.onreadystatechange = function() {
             if (this.readyState === 4 && this.status === 200) {
                 alert("successfully created app");
+                navigate('/');
             } 
             else if (this.readyState === 4 && this.status > 400) {
                 // Failed to create app
@@ -109,12 +115,21 @@ const CreateApp = () => {
 
     return (
         <>
-        <UserNav />
         <div className="container">
         <div className="row mt-3">
         <div className="col"></div>
-        <form className="col-6 p-0 mb-5" onSubmit={handleSubmitApp}>
-            <h5>Create Application Details</h5>
+          <div className="col-6 p-0 mb-5">
+            <div className="row">
+                <div className="col">
+                    <h5>Create Application Details</h5>
+                </div>
+                <div className="col-auto">
+                <button className='btn btn-outline-primary mb-2 fw-bold'onClick={() => navigate(-1)}>
+                    &lt; back
+                </button>
+                </div>
+            </div>
+        <form onSubmit={handleSubmitApp}>   
             <hr />
             {/* Application Acronym input */}
             <div className="row mb-3">
@@ -123,6 +138,7 @@ const CreateApp = () => {
                     className="form-control ms-2" 
                     type="text" 
                     onChange={e => setAppAcr(e.target.value)}
+                    required
                 />
             </div>
             
@@ -135,6 +151,7 @@ const CreateApp = () => {
                     rows="3"
                     maxLength={150}
                     onChange={e => handleAppDesc(e)}
+                    required
                 />
                 <p className="text-end m-0 p-0"><small>{charLeft} / 150 characters left</small></p>
             </div>
@@ -226,6 +243,7 @@ const CreateApp = () => {
 
             <button className="btn btn-primary mt-2 float-end" type="submit">Create New App</button>
         </form>
+        </div>
         <div className="col"></div>
         </div>
             

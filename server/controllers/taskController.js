@@ -261,39 +261,42 @@ try {
 // PM: approve new task/ set open->toDo
 exports.setToDo = async(req, res) => {
 try {
-    const checkVal = await checkUserPerm(req,'createToDo');
+    const checkVal = await checkUserPerm(req,'setToDo');
     // send status 403 if user don't have the permission to do so
     if (checkVal === false) {
         res.sendStatus(403);
     } else {
     
-    const { taskId } = req.body;
-    const owner = req.session.username;
+        const { taskId } = req.body;
+        const owner = req.session.username;
 
-    // check if taskid is valid 
-    const query1 = `SELECT Task_state FROM nodelogin.task WHERE Task_id="${taskId}";`;
-    try {
-        const result = await getQuery.processQuery(query1,req.pool);
-        // send status 400 if task don't exist
-        if (result.length === 0) {
-            res.sendStatus(400);
-        } else {
-            // make the note that task status is set to 'to-do'
-            const note = noteGen.makeNote(owner, 'to-do');
-            console.log(note)
+        // check if taskid is valid 
+        const query1 = `SELECT Task_state FROM nodelogin.task WHERE Task_id="${taskId}";`;
+        try {
+            const result = await getQuery.processQuery(query1,req.pool);
+            // send status 400 if task don't exist
+            if (result.length === 0) {
+                res.sendStatus(400);
+            } else if ((result[0].Task_state === 'open') || (result[0].Task_state === 'doing')) {
+                // make the note that task status is set to 'to-do'
+                const note = noteGen.makeNote(owner, 'to-do');
+                console.log(note)
 
-            // Update the status of the task=to-do, audit trail, task_owner 
-            const query2 = `UPDATE nodelogin.task SET Task_state='to_do', Task_notes=CONCAT('${note}',Task_notes)
-            WHERE Task_id='${taskId}';`;
+                // Update the status of the task=to-do, audit trail, task_owner 
+                const query2 = `UPDATE nodelogin.task SET Task_state='to_do', Task_notes=CONCAT('${note}',Task_notes)
+                WHERE Task_id='${taskId}';`;
 
-            // Update the task
-            await getQuery.processQuery(query2, req.pool);
-            res.sendStatus(200);
+                // Update the task
+                await getQuery.processQuery(query2, req.pool);
+                res.sendStatus(200);
+            }  else  {
+                console.log("task state can't be set because of its previous state")
+                res.sendStatus(403);
+            }
+        } catch (error) {
+            res.sendStatus(500);
         }
-    } catch (error) {
-        res.sendStatus(500);
     }
-}
 } catch (error) {
     console.log(error)
     res.sendStatus(500);
@@ -309,33 +312,37 @@ try {
         res.sendStatus(403);
     } else {
 
-    const { taskId } = req.body;
-    const owner = req.session.username;
+        const { taskId } = req.body;
+        const owner = req.session.username;
 
-    // check if taskid is valid
-    const query1 = `SELECT Task_state FROM nodelogin.task WHERE Task_id="${taskId}";`;
-    try {
-        const result = await getQuery.processQuery(query1,req.pool);
-        // send status 400 if task don't exist
-        if (result.length === 0) {
-            res.sendStatus(400);
-        } else {
-            // make the note that task status is set to Doing
-            const note = noteGen.makeNote(owner, 'doing');
-            console.log(note)
+        // check if taskid is valid
+        const query1 = `SELECT Task_state FROM nodelogin.task WHERE Task_id="${taskId}";`;
+        try {
+            const result = await getQuery.processQuery(query1,req.pool);
+            // send status 400 if task don't exist
+            if (result.length === 0) {
+                res.sendStatus(400);
+            } else if ((result[0].Task_state == 'to_do' )||(result[0].Task_state == 'done')) {
+                // make the note that task status is set to Doing
+                const note = noteGen.makeNote(owner, 'doing');
+                console.log(note)
 
-            // Update the status of the task=doing, audit trail, task_owner
-            const query2 = `UPDATE nodelogin.task SET Task_state='doing', Task_notes=CONCAT('${note}',Task_notes) 
-            WHERE Task_id='${taskId}';`;
+                // Update the status of the task=doing, audit trail, task_owner
+                const query2 = `UPDATE nodelogin.task SET Task_state='doing', Task_notes=CONCAT('${note}',Task_notes) 
+                WHERE Task_id='${taskId}';`;
 
-            // Update the task
-            await getQuery.processQuery(query2, req.pool);
-            res.sendStatus(200);
+                // Update the task
+                await getQuery.processQuery(query2, req.pool);
+                res.sendStatus(200);
+            } else {
+                //console.log('LOGGGGGGGGG', result[0].Task_state)
+                res.sendStatus(403);
+            }
+        } catch (error) {
+            console.log("task state can't be set because of its previous state")
+            res.sendStatus(500);
         }
-    } catch (error) {
-        res.sendStatus(500);
     }
-}
 } catch (error) {
     console.log(error)
     res.sendStatus(500);
@@ -361,7 +368,7 @@ try {
         // send status 400 if task don't exist
         if (result.length === 0) {
             res.sendStatus(400);
-        } else {
+        } else if (result[0].Task_state === 'doing') {
             // get the email and send email to the task_creator 
             const query3 = `SELECT email FROM nodelogin.accounts WHERE username='${result[0].Task_creator}';`;
             const result2 = await getQuery.processQuery(query3,req.pool);
@@ -381,6 +388,9 @@ try {
             // Update the task
             await getQuery.processQuery(query2, req.pool);
             res.sendStatus(200);
+        } else {
+            console.log("task state can't be set because of its previous state")
+            res.sendStatus(403);
         }
     } catch (error) {
         console.log(error)
@@ -412,7 +422,7 @@ try {
         // send status 400 if task don't exist
         if (result.length === 0) {
             res.sendStatus(400);
-        } else {
+        } else if (result[0].Task_state === 'done') {
             // make the note that task status is set to close
             const note = noteGen.makeNote(owner, 'close');
             console.log(note)
@@ -424,7 +434,10 @@ try {
             // Update the task
             await getQuery.processQuery(query2, req.pool);
             res.sendStatus(200);
-        }
+        } else  {
+            console.log("task state can't be set because of its previous state")
+            res.sendStatus(403);
+        } 
     } catch (error) {
         res.sendStatus(500);
     }

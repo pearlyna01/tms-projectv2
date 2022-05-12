@@ -2,39 +2,36 @@
 import React, { useState } from "react";
 import { useNavigate,  Link } from 'react-router-dom';
 
+import { useAtom  } from "jotai";
+import { UserAtom } from "./Login";
 
-class Dashboard extends React.Component {
-    constructor(props) {
-        super(props);
-        
-        this.state = {
-            isLoaded: false,
-            dataFetch:null,
-            isAdmin: this.props.isAdmin
-        };
-    }
+const Dashboard = () => {
+    const [isLoaded, setIsLoaded] = useState(false);
+    const [dataFetch, setDataFetch] = useState(null);
+    const [user, setUserAtom ] = useAtom(UserAtom);
 
-    componentDidMount() {
+    React.useEffect(() => {
         fetch('../../task/getAllApps')
             .then(response => response.json())
-            .then(data => this.setState({isLoaded:true, dataFetch: data}))
+            .then(data => {
+                setDataFetch(data);
+                setIsLoaded(true);
+                console.log(data)
+            })
             .catch(err => {
                 alert('unable to fetch app')
                 console.log(err)
             } );
-    }
-
-    render() {
-    const arr = this.state.dataFetch;
+    },[]);
  
-    if (this.state.isLoaded) {
+    if (isLoaded) {
     
     return (
         <>
         <div className="container">
             <div className="row mt-2">
                 <h3 className="fw-bold col-2">Dashboard</h3>
-                { this.state.isAdmin ?
+                { (user.roles.includes("Admin")) ?
                     <div className="col-auto mt-1">
                         <Link to='/createApp'><button className="btn btn-primary btn-sm">+ Create App</button></Link>
                     </div> 
@@ -47,7 +44,7 @@ class Dashboard extends React.Component {
             </div>
             <div className="row">
                 {
-                    arr.map((row,index) => {
+                    dataFetch.map((row,index) => {
                         const toLink = `/dashboard/${row.App_Acronym}`;
                         let sDate = new Date(row.App_startDate);
                         sDate = `${sDate.toDateString()}`;
@@ -91,8 +88,8 @@ class Dashboard extends React.Component {
         } else {
             return (<h4>Loading data</h4>);
         }
-        }
-    }
+}
+    
 
 
 

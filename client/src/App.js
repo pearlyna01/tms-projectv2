@@ -28,7 +28,7 @@ function App() {
         <Route path="/login" element={<Login />}/>
 
         <Route element={<RequireAuth role="user"/>}>
-          <Route path="/" element={<UserNav> <Dashboard isAdmin={user.roles.includes("Admin")}/> </UserNav>}/>
+          <Route path="/" element={<UserNav> <Dashboard/> </UserNav>}/>
           <Route path="/settings" element={<Settings/>}/>
 
           <Route path="/createPlan/:app" element={<CreatePlan/>}/>
@@ -40,7 +40,7 @@ function App() {
           <Route element={<RequireAuth role="admin"/>}>
             
             {/* app management  */}
-            <Route path="/createApp" element={<CreateApp/>}/>
+            <Route path="/createApp" element={<UserNav><CreateApp/></UserNav>}/>
 
             {/* user management */}
             <Route path="/createUser" element={<CreateUser/>}/>
