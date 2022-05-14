@@ -46,7 +46,7 @@ CREATE TABLE `application` (
 
 LOCK TABLES `application` WRITE;
 /*!40000 ALTER TABLE `application` DISABLE KEYS */;
-INSERT INTO `application` VALUES ('ACRO','test value',0,'2003-04-23','2003-04-05','[\"Admin\"]','[\"Admin\"]','[\"Admin\"]','[\"Admin\"]',NULL,'[\"Admin\"]','[\"Admin\"]',NULL),('ACRO2','test value',7,'2003-04-23','2003-04-06','[\"Admin\"]','[\"Admin\"]','[\"Admin\"]','[\"Admin\"]',NULL,'[\"Admin\"]','[\"Admin\"]',NULL),('ACRO3','test value',2,'2003-04-23','2003-04-06','[\"Admin\"]','[\"Admin\"]','[\"Admin\"]','[\"Admin\", \"Project Lead\"]',NULL,'[\"Admin\"]','[\"Admin\"]',NULL),('APP','description here',0,'2022-06-12','2022-06-20','[\"Admin\", \"Project Lead\"]','[\"Admin\", \"Project Lead\"]','[\"Admin\"]','[\"Admin\"]',NULL,'[\"Admin\"]','[\"Admin\"]',NULL),('APP0','sdfsdfsdf',0,'2022-05-05','2022-05-05','[\"Admin\", \"Lead\", \"Project Manager\"]','[\"Team Member\", \"Lead\"]','[\"Team Member\", \"Lead\", \"Admin\"]','[\"Lead\", \"Team Member\", \"Project Manager\"]','[\"Team Member\", \"Lead\", \"Project Manager\"]','[\"Lead\", \"Team Member\", \"Project Manager\"]','[\"Team Member\", \"Admin\"]',NULL);
+INSERT INTO `application` VALUES ('ACRO2','test value',10,'2003-04-23','2003-04-06','[\"Admin\", \"Lead\"]','[\"Admin\"]','[\"Admin\"]','[\"Admin\"]','[\"Admin\"]','[\"Admin\", \"Lead\"]','[\"Admin\"]',NULL),('ACRO3','test value',9,'2003-04-23','2003-04-06','[\"Admin\"]','[\"Admin\"]','[\"Admin\"]','[\"Admin\", \"Project Lead\"]','[\"Admin\"]','[\"Admin\", \"Lead\"]','[\"Admin\"]',NULL),('APP0','sdfsdfsdf',0,'2022-05-05','2022-05-05','[\"Admin\", \"Lead\", \"Project Manager\"]','[\"Team Member\", \"Lead\"]','[\"Team Member\", \"Lead\", \"Admin\"]','[\"Lead\", \"Team Member\", \"Project Manager\"]','[\"Team Member\", \"Lead\", \"Project Manager\"]','[\"Lead\", \"Team Member\", \"Project Manager\"]','[\"Team Member\", \"Admin\"]',NULL),('APP4','something',1,'2022-05-12','2022-05-12','[\"Admin\"]','[\"Admin\", \"Lead\"]','[\"Project Manager\"]','[\"Project Manager\"]','[\"Team Member\"]','[\"Team Member\", \"Admin\"]','[\"Team Member\"]',NULL),('TWST','oiugog u',0,'2022-05-09','2022-05-09','[\"\"]','[\"\"]','[\"\"]','[\"\"]','[\"\"]','[\"\"]','[\"\"]',NULL);
 /*!40000 ALTER TABLE `application` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -59,4 +59,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-05-06 17:09:21
+-- Dump completed on 2022-05-14 12:18:25

@@ -16,31 +16,26 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `plan`
+-- Table structure for table `grouplist`
 --
 
-DROP TABLE IF EXISTS `plan`;
+DROP TABLE IF EXISTS `grouplist`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `plan` (
-  `Plan_MVP_name` varchar(20) NOT NULL,
-  `Plan_startDate` date DEFAULT NULL,
-  `Plan_endDate` date DEFAULT NULL,
-  `Plan_app_Acronym` varchar(20) DEFAULT NULL,
-  PRIMARY KEY (`Plan_MVP_name`),
-  KEY `Plan_app_Acronym` (`Plan_app_Acronym`),
-  CONSTRAINT `plan_ibfk_1` FOREIGN KEY (`Plan_app_Acronym`) REFERENCES `application` (`App_Acronym`)
+CREATE TABLE `grouplist` (
+  `username` varchar(30) DEFAULT NULL,
+  `groupName` json DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `plan`
+-- Dumping data for table `grouplist`
 --
 
-LOCK TABLES `plan` WRITE;
-/*!40000 ALTER TABLE `plan` DISABLE KEYS */;
-INSERT INTO `plan` VALUES ('MVP_3','2022-09-20','2022-10-22','ACRO3'),('MVP_4','2022-05-10','2022-05-10','ACRO3'),('MVP_5','2022-05-10','2022-05-10','ACRO3');
-/*!40000 ALTER TABLE `plan` ENABLE KEYS */;
+LOCK TABLES `grouplist` WRITE;
+/*!40000 ALTER TABLE `grouplist` DISABLE KEYS */;
+INSERT INTO `grouplist` VALUES ('admin','[\"Admin\"]'),('member2','[\"Admin\"]'),('member3','[\"Admin\"]'),('member3','[\"Project Manager\", \"Team Member\"]');
+/*!40000 ALTER TABLE `grouplist` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -52,4 +47,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-05-14 12:18:26
+-- Dump completed on 2022-05-14 12:18:24
