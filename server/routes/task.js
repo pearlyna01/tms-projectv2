@@ -12,7 +12,7 @@ const {
     createApp, getAllApps,
     createTask, createPlan,
     setToDo, setDoing, setDone, setClose,
-    getAppPlans, getAppTasks, getAppInfo,
+    getAppPlans, getAppTasks, getAppInfo, getTaskDetail,
     getUserPerms,
     doneTask 
 } = require('../controllers/taskController');
@@ -25,6 +25,9 @@ router.route('/getAppPlans/:app').get( getAppPlans);
 
 // Get all tasks of an app
 router.route('/getAppTasks/:app').get( getAppTasks);
+
+// Get details of a task of an app
+router.route('/getAppTask/:taskID').get( getTaskDetail);
 
 // Get an App info 
 router.route('/getAppInfo/:app').get( getAppInfo);

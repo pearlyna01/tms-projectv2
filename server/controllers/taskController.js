@@ -3,6 +3,19 @@ const getQuery = require('../modules/getQuery');
 const noteGen = require('../modules/noteGen');
 const { checkUserPerm,userGrps } = require('../modules/checkAuth'); 
 
+// Get details of a task of a App
+exports.getTaskDetail = async(req, res) => {
+    const query = `SELECT * FROM nodelogin.task WHERE Task_id='${req.params.taskID}' ORDER BY Task_state;`;
+    try {
+        const result = await getQuery.processQuery(query, req.pool);
+        res.send(result);
+    } catch (error) {
+        console.log('Something went wrong with task details')
+        console.log(error)
+        res.sendStatus(500);
+    }
+};
+
 // Get what permits does the user have for the app
 exports.getUserPerms = async(req, res) => {
     // query to get all the permissions 

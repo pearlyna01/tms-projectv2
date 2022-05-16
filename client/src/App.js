@@ -1,7 +1,6 @@
 // This file contains the links to the web pages
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import { Provider, useAtom  } from "jotai";
-import { UserAtom } from "./components/Login";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Provider } from "jotai";
 
 // webpages here
 import Login from "./components/Login";
@@ -20,7 +19,6 @@ import UserNav from "./components/navbar/UserNav";
 
 import RequireAuth from "./RequireAuth";
 function App() {
-  const [user, setUserAtom ] = useAtom(UserAtom);
   return (
     <BrowserRouter>
     <Provider>
