@@ -1,6 +1,10 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { DragDropContext, Droppable, Draggable} from 'react-beautiful-dnd';
+import { atom,useAtom  } from 'jotai';
+import { Link } from 'react-router-dom';
+
+const isLeadAtom = atom(false);
 
 // function to modify the columns
 // adding the className "col-OK" / "col-NO" if the user has the permissions to the column
@@ -36,8 +40,10 @@ function modifyCols(obj) {
 // container to render the task details
 const TaskView = ({row,index}) => {
     const taskID = `#${row.Task_id}`;
+    let params = useParams();
     let createDate = new Date(row.Task_createDate);
-
+    const [lead, setLead] = useAtom(isLeadAtom);
+    const editLink = `/editTask/${params.app}/${row.Task_id}`;
     return (
         <Draggable draggableId={row.Task_id} index={index}> 
         {(provided) => {
@@ -54,14 +60,29 @@ const TaskView = ({row,index}) => {
 
                     {/* VIEW TASK  */}
                     {/* Button trigger 'view tasks' */}
-                    <div>
-                        <button
+                    <div className='row m-0'>
+                        <div className="col">
+                            {
+                                lead && row.Task_state==='open' ? 
+                                <Link to={editLink}><button
+                                type="button"
+                                className="btn btn-colorP btn-sm"
+                                >
+                                   <small>Edit Task</small> 
+                                </button></Link>
+                             :null
+                            }
+                        </div>
+                        <div className="col-auto">
+                            <button
                             type="button"
-                            className="btn btn-primary btn-sm float-end"
+                            className="btn btn-primary btn-sm"
                             data-bs-toggle="modal"
                             data-bs-target={taskID}>
-                            View Task
-                        </button>
+                                <small>View Task</small> 
+                            </button>
+                        </div>
+                        
                     </div>
 
 
@@ -183,6 +204,7 @@ const ViewTasks = () =>{
     const [userPerm, setUserPerm] = React.useState([]);
     const [appDetail, setAppDetail] = React.useState([]);
     const [appPlans, setAppPlans] = React.useState([]);
+    const [lead, setLead] = useAtom(isLeadAtom);
 
     function updateTask(source, destination) { 
         const actLink = getAction(destination.droppableId);
@@ -203,9 +225,7 @@ const ViewTasks = () =>{
                 // setTasks(a_list);
 
                 changeList(tasks, source, destination)
-                    .then(result => {
-                        setAppDetail(result);
-                    })
+                    .then(result => setAppDetail(result))
                     .catch(e => console.log(e));
                 //return 'OK';
                 //setOldT(a_list);
@@ -245,6 +265,7 @@ const ViewTasks = () =>{
                 setTasks(data1);
                 //setOldT(data1);
                 setUserPerm(data2);
+                setLead(data2.App_permit_Open);
                 modifyCols(data2);
                 setAppDetail(data3);
                 setAppPlans(data4);
@@ -289,7 +310,7 @@ const ViewTasks = () =>{
             {/* buttons column */}
             <div className="col-auto float-end">
                 {
-                    userPerm.App_permit_CreateT ? 
+                    userPerm.App_permit_Create ? 
                     <button className="btn btn-colorT btn-fade btn-sm me-3" onClick={() => navigate(createTLink)}>
                         + New Task
                     </button> : null

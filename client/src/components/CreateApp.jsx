@@ -3,9 +3,6 @@ import React, { useState,useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-import MultiSelect from  'react-multiple-select-dropdown-lite';
-import 'react-multiple-select-dropdown-lite/dist/index.css';
-
 import { useNavigate,  Link } from 'react-router-dom';
 
 const CreateApp = () => {
@@ -34,26 +31,10 @@ const CreateApp = () => {
     const [permitDone, setPermitDone] = useState('');
     // App permit close
     const [permitClose, setPermitClose] = useState('');
-    // App permit create task
-    const [permitCreateT, setPermitCreateT] = useState('');
-    // App permit create plan
-    const [permitCreateP, setPermitCreateP] = useState('');
+    // App permit create 
+    const [permitCreate, setPermitCreate] = useState('');
 
     const navigate = useNavigate();
-
-    // modify the options to an array of { label:'', value:'' }
-    function modifyOptions() {
-        const arr = options;
-        const res = [];
-        for (let index = 0; index < arr.length; index++) {
-            const element = arr[index];
-            const jsonObj = {};
-            jsonObj.label = element;
-            jsonObj.value = element;
-            res.push(jsonObj);
-        }
-        return res;
-    }
 
     // load the list of group names
     useEffect(() => {
@@ -71,17 +52,10 @@ const CreateApp = () => {
         setCharLeft(150 - e.target.value.length);
     }
 
-    // Handle submit IN PROGRESS
+    // Handle submit 
     function handleSubmitApp(event) {
         event.preventDefault();
-        console.log("start", startDate)
-        let Open = permitOpen.split(',');
-        let ToDo = permitToDo.split(',');
-        let Doing = permitDoing.split(',');
-        let Done = permitDone.split(',');
-        let Close = permitClose.split(',');
-        let createt = permitCreateT.split(',');
-        let createp = permitCreateP.split(',');
+        console.log("start", startDate);
         
         const xhttp = new XMLHttpRequest();
         xhttp.open("POST","../../task/createApp",true);
@@ -103,13 +77,12 @@ const CreateApp = () => {
             desc : appDesc,
             startDate : startDate.getFullYear() + '-' + (startDate.getMonth()+1) + '-' + startDate.getDate(), 
             endDate : endDate.getFullYear() + '-' + (endDate.getMonth()+1) + '-' + endDate.getDate(), 
-            pOpen : Open,
-            pToDo : ToDo, 
-            pDoing : Doing,
-            pDone : Done, 
-            pClose : Close,
-            createT : createt, 
-            createP : createp
+            pOpen : permitOpen,
+            pToDo : permitToDo, 
+            pDoing : permitDoing,
+            pDone : permitDone, 
+            pClose : permitClose,
+            create : permitCreate 
         }));
     }
 
@@ -181,64 +154,121 @@ const CreateApp = () => {
             {/* permit open */}
             <div className="row mb-3">
                 <label className="form-label">Groups with permission to Open tasks</label> 
-                <MultiSelect 
-                    onChange={val => setPermitOpen(val)}
-                    options={modifyOptions}
-                />           
+                <select
+                    className="form-select"
+                    onChange={e => setPermitOpen(e.target.value)}
+                    value={permitOpen}
+                >
+                    {
+                        options.map((role, index) => {
+                            return (
+                                <option key={index} value={role}>
+                                    {role}
+                                </option>
+                            );
+                        })
+                    }
+                </select>   
             </div>
 
             {/* permit Todo */}
             <div className="row mb-3">
                 <label className="form-label">Groups with permission to To-Do tasks</label> 
-                <MultiSelect 
-                    onChange={val => setPermitToDo(val)}
-                    options={modifyOptions}
-                />
+                <select
+                    className="form-select"
+                    onChange={e => setPermitToDo(e.target.value)}
+                    value={permitToDo}
+                >
+                    {
+                        options.map((role, index) => {
+                            return (
+                                <option key={index} value={role}>
+                                    {role}
+                                </option>
+                            );
+                        })
+                    }
+                </select>  
             </div>
 
             {/* permit doing */}
             <div className="row mb-3">
                 <label className="form-label">Groups with permission to Doing tasks</label> 
-                <MultiSelect 
-                    onChange={val => setPermitDoing(val)}
-                    options={modifyOptions}
-                />
+                <select
+                    className="form-select"
+                    onChange={e => setPermitDoing(e.target.value)}
+                    value={permitDoing}
+                >
+                    {
+                        options.map((role, index) => {
+                            return (
+                                <option key={index} value={role}>
+                                    {role}
+                                </option>
+                            );
+                        })
+                    }
+                </select>  
             </div>
 
             {/* permit done */}
             <div className="row mb-3">
                 <label className="form-label">Groups with permission to Done tasks</label> 
-                <MultiSelect 
-                    onChange={val => setPermitDone(val)}
-                    options={modifyOptions}
-                />
+                <select
+                    className="form-select"
+                    onChange={e => setPermitDone(e.target.value)}
+                    value={permitDone}
+                >
+                    {
+                        options.map((role, index) => {
+                            return (
+                                <option key={index} value={role}>
+                                    {role}
+                                </option>
+                            );
+                        })
+                    }
+                </select>  
             </div>
 
             {/* permit close */}
             <div className="row mb-3">
                 <label className="form-label">Groups with permission to Close tasks</label> 
-                <MultiSelect 
-                    onChange={val => setPermitClose(val)}
-                    options={modifyOptions}
-                />
+                <select
+                    className="form-select"
+                    onChange={e => setPermitClose(e.target.value)}
+                    value={permitClose}
+                >
+                    {
+                        options.map((role, index) => {
+                            return (
+                                <option key={index} value={role}>
+                                    {role}
+                                </option>
+                            );
+                        })
+                    }
+                </select>  
             </div>
 
             {/* permit create task */}
             <div className="row mb-3">
                 <label className="form-label">Groups with permission to create tasks</label> 
-                <MultiSelect 
-                    onChange={val => setPermitCreateT(val)}
-                    options={modifyOptions}
-                />
-            </div>
-
-            {/* permit create plan */}
-            <div className="row mb-3">
-                <label className="form-label">Groups with permission to create plan</label> 
-                <MultiSelect 
-                    onChange={val => setPermitCreateP(val)}
-                    options={modifyOptions}
-                />
+                <select
+                    className="form-select"
+                    onChange={e => setPermitCreate(e.target.value)}
+                    value={permitCreate}
+                >
+                    {
+                        options.map((role, index) => {
+                            return (
+                                <option key={index} value={role}>
+                                    {role}
+                                </option>
+                            );
+                        })
+                    }
+                </select>  
             </div>
 
             <button className="btn btn-primary mt-2 float-end" type="submit">Create New App</button>

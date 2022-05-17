@@ -15,7 +15,6 @@ const CreateTask = () => {
     const [Tdesc, setTdesc] = React.useState('');
     const [plan, setPlan] = React.useState('');
     const [listP, setListP] = React.useState([]);
-    const [owner, setOwner] = React.useState('');
 
     // load the list of plans (of the application)
     useEffect(() => {
@@ -53,7 +52,6 @@ const CreateTask = () => {
             desc: Tdesc,
             plan: plan,
             app: params.app,
-            owner: owner
         }));
     }
 
@@ -88,16 +86,6 @@ const CreateTask = () => {
                     className='form-control' 
                     type="text"  
                     onChange={e => setTname(e.target.value)}
-                    required
-                />
-            </div>
-            {/* task owner */}
-            <div className="row mb-3">
-                <label>Task Owner</label>
-                <input 
-                    className='form-control' 
-                    type="text"  
-                    onChange={e => setOwner(e.target.value)}
                     required
                 />
             </div>

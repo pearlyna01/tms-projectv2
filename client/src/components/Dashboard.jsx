@@ -5,6 +5,32 @@ import { useNavigate,  Link } from 'react-router-dom';
 import { useAtom  } from "jotai";
 import { UserAtom } from "./Login";
 
+class CustomModal extends React.Component {
+
+    render() {
+        return( 
+            <div className="modal" tabIndex="-1">
+            <div className="modal-dialog">
+                <div className="modal-content">
+                <div className="modal-header">
+                    <h5 className="modal-title">Modal title</h5>
+                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div className="modal-body">
+                    <p>Modal body text goes here.</p>
+                </div>
+                <div className="modal-footer">
+                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" className="btn btn-primary">Save changes</button>
+                </div>
+                </div>
+            </div>
+            </div>
+
+        )
+    }
+}
+
 const Dashboard = () => {
     const [isLoaded, setIsLoaded] = useState(false);
     const [dataFetch, setDataFetch] = useState(null);
@@ -63,7 +89,11 @@ const Dashboard = () => {
                                         Start Date: {sDate} <br />
                                         End date:   {eDate}
                                     </pre>
-                                    <Link to={toLink}>View Tasks</Link>
+                                    <div className="row">
+                                        <Link to={toLink} className="col"><button className="btn btn-colorT btn-fade btn-sm me-3">View Tasks</button></Link>
+                                        <Link to='/' className="col"><button className="btn btn-colorP btn-fade btn-sm me-3">Edit App</button></Link>
+                                    </div>
+                                    
                                 </div>
                             </div>
                         );
@@ -82,6 +112,7 @@ const Dashboard = () => {
                 </div> */
                 }
             </div>
+            <CustomModal />
         </div> 
         </>
             );
