@@ -8,7 +8,7 @@ exports.getTaskDetail = async(req, res) => {
     const query = `SELECT * FROM nodelogin.task WHERE Task_id='${req.params.taskID}' ORDER BY Task_state;`;
     try {
         const result = await getQuery.processQuery(query, req.pool);
-        res.send(result);
+        res.send(result[0]);
     } catch (error) {
         console.log('Something went wrong with task details')
         console.log(error)

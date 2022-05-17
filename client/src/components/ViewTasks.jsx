@@ -129,18 +129,31 @@ function reorder(array, start, end) {
 }
 
 // function to modify list of tasks if user has the perms to do it
+// AND get the task's latest details
 function changeList(arr, source, destination) {
-    const arrCopy = {...arr};
+    return new Promise((resolve, reject) => {
+        let arrCopy = { ...arr };
+        console.log(arrCopy)
+        let sourceCopy = arrCopy[source.droppableId];
+        let destCopy = arrCopy[destination.droppableId];
+        const [removed] = sourceCopy.splice(source.index, 1);
 
-    let sourceCopy = arrCopy[source.droppableId];
-    let destCopy = arrCopy[destination.droppableId];
-    const [removed] = sourceCopy.splice(source.index,1);
+        destCopy.splice(destination.index, 0, removed);
 
-    destCopy.splice(destination.index,0,removed);
-
-    arrCopy[source.droppableId] = sourceCopy;
-    arrCopy[destination.droppableId] = destCopy;
-    return arrCopy;
+        arrCopy[source.droppableId] = sourceCopy;
+        arrCopy[destination.droppableId] = destCopy;
+        
+        // get task details
+        let id = arrCopy[destination.droppableId][destination.index].Task_id;
+        console.log(`fetching data task id ${id}`)
+        fetch(`../../task/getAppTask/${id}`)
+            .then(res => res.json())
+            .then(data => {
+                arrCopy[destination.droppableId][destination.index] = data;
+                resolve(arrCopy);
+            })
+            .catch(e => reject(e));
+    });
 }
 
 // returns the route link based on the action
@@ -186,8 +199,14 @@ const ViewTasks = () =>{
             // modify the tasks if the task state has been updated
             if (this.readyState === 4 && this.status === 200) {
                 // update board
-                const a_list = changeList(tasks, source, destination);
-                setTasks(a_list);
+                // const a_list = changeList(tasks, source, destination);
+                // setTasks(a_list);
+
+                changeList(tasks, source, destination)
+                    .then(result => {
+                        setAppDetail(result);
+                    })
+                    .catch(e => console.log(e));
                 //return 'OK';
                 //setOldT(a_list);
             // alert if user don't have the permissions to update the task state
