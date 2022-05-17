@@ -16,7 +16,7 @@ exports.isAuthenticated = async(req, res, next) => {
 const mysql = require('mysql2');
 const config = require('../config/dbconfig.json');
 const Promise = require('promise');
-async function checkGroup(username, groupName) {
+async function checkGroup2(username, groupName) {
     return new Promise(function(resolve,reject) {
         const con = mysql.createConnection(config);     // create connection
         con.connect((err) => {
@@ -56,7 +56,7 @@ exports.addReq = (toQuery) => {
 // check if user has the role group to enter route 
 exports.checkUserGrp = (req,res,next) => {
     //console.log(req.session)
-    checkGroup(req.session.username, req.session.toQuery).then(check => {
+    checkGroup2(req.session.username, req.session.toQuery).then(check => {
         if (check) {
             console.log(`User has the role ${req.session.toQuery}`)
             next();
@@ -155,77 +155,163 @@ async function checkPerm(permType, app, user, pool) {
         }
     });
 }
-// Check group roles/ permissions 
-// i.e. if user has the permission to do this action under the app permission
+
+// NEW Check group roles/ permissions
+function checkGroup(username, group, pool) {
+    return new Promise(function(resolve,reject) {
+        const query = `SELECT json_arrayagg(groupName) AS grpNames FROM nodelogin.groups 
+        WHERE id IN (SELECT MAX(id) FROM nodelogin.groups WHERE username="${username}" GROUP BY groupName)
+        AND active='1'
+        AND groupName in (
+            SELECT groupName FROM nodelogin.groups 
+            WHERE id IN (SELECT MAX(id) FROM nodelogin.groups WHERE username="desc" GROUP BY groupName)
+            AND active='1');`;
+        
+        // query to database
+        getQuery.processQuery(query, pool).then(result => {
+            const groups = result[0].grpNames;
+            if (groups.includes(group)) {
+                resolve(true);
+            } else {
+                resolve(false);
+            }
+        }).catch( err => reject(err) );
+    });
+} 
 exports.checkUserPerm = async (req, action) => {
     return new Promise(function(resolve, reject) {
-        // route will continus if user has admin
-        // if (req.session.roles.includes('Admin')) {
-        //     next();
-        // } else {
         switch (action) {
-            case 'createTask':
-                checkPerm('App_permit_CreateT', req.body.app, req.session.username, req.pool)
-                    .then(result => {
-                        if (result === true) { resolve(true); }
-                        else { resolve(false); }
-                    }).catch(err => {
-                        console.log('error in checking permit\n', err);
-                        reject(err);
-                    });
-                break;
             case 'createPlan':
-                checkPerm('App_permit_CreateP', req.body.app, req.session.username, req.pool)
-                    .then(result => {
-                        if (result === true) { resolve(true); }
-                        else { resolve(false); }
-                    }).catch(err => {
-                        console.log('error in checking permit\n', err);
-                        reject(err);
-                    });
+                checkGroup(req.session.username, "Project Manager", req.pool)
+                    .then(result => resolve(result))
+                    .catch(e => reject(e));
+                break;
+            case 'createTask':
+                const query1 = `SELECT App_permit_Create FROM nodelogin.application WHERE App_Acronym="${req.body.app}";`;
+                getQuery.processQuery(query1, req.pool)
+                    .then(data => {
+                        const grp = data[0].App_permit_Create;
+                        checkGroup(req.session.username, grp, req.pool)
+                            .then(result => resolve(result));
+                    })
+                    .catch(e => reject(e));
                 break;
             case 'setToDo':
-                checkPerm('App_permit_ToDoList', req.body.app, req.session.username, req.pool)
-                    .then(result => {
-                        if (result === true) { resolve(true); }
-                        else { resolve(false); }
-                    }).catch(err => {
-                        console.log('error in checking permit\n', err);
-                        reject(err);
-                    });
+                const query2 = `SELECT App_permit_ToDoList FROM nodelogin.application WHERE App_Acronym="${req.body.app}";`;
+                getQuery.processQuery(query2, req.pool)
+                    .then(data => {
+                        const grp = data[0].App_permit_ToDoList;
+                        checkGroup(req.session.username, grp, req.pool)
+                            .then(result => resolve(result));
+                    })
+                    .catch(e => reject(e));
                 break;
             case 'setDoing':
-                checkPerm('App_permit_Doing', req.body.app, req.session.username, req.pool)
-                    .then(result => {
-                        if (result === true) { resolve(true); }
-                        else { resolve(false); }
-                    }).catch(err => {
-                        console.log('error in checking permit\n', err);
-                        reject(err);
-                    });
+                const query3 = `SELECT App_permit_Doing FROM nodelogin.application WHERE App_Acronym="${req.body.app}";`;
+                getQuery.processQuery(query3, req.pool)
+                    .then(data => {
+                        const grp = data[0].App_permit_Doing;
+                        checkGroup(req.session.username, grp, req.pool)
+                            .then(result => resolve(result));
+                    })
+                    .catch(e => reject(e));
                 break;
             case 'setDone':
-                checkPerm('App_permit_Doing', req.body.app, req.session.username, req.pool)
-                    .then(result => {
-                        if (result === true) { resolve(true); }
-                        else { resolve(false); }
-                    }).catch(err => {
-                        console.log('error in checking permit\n', err);
-                        reject(err);
-                    });
+                const query4 = `SELECT App_permit_Done FROM nodelogin.application WHERE App_Acronym="${req.body.app}";`;
+                getQuery.processQuery(query4, req.pool)
+                    .then(data => {
+                        const grp = data[0].App_permit_Done;
+                        checkGroup(req.session.username, grp, req.pool)
+                            .then(result => resolve(result));
+                    })
+                    .catch(e => reject(e));
                 break;
             case 'setClose':
-                checkPerm('App_permit_Close', req.body.app, req.session.username, req.pool)
-                    .then(result => {
-                        if (result === true) { resolve(true); }
-                        else { resolve(false); }
-                    }).catch(err => {
-                        console.log('error in checking permit\n', err);
-                        reject(err);
-                    });
+                const query5 = `SELECT App_permit_Close FROM nodelogin.application WHERE App_Acronym="${req.body.app}";`;
+                getQuery.processQuery(query5, req.pool)
+                    .then(data => {
+                        const grp = data[0].App_permit_Close;
+                        checkGroup(req.session.username, grp, req.pool)
+                            .then(result => resolve(result));
+                    })
+                    .catch(e => reject(e));
                 break;
             default:
                 reject('error: no parameter to query');
         }
     });
 };
+// Check group roles/ permissions 
+// i.e. if user has the permission to do this action under the app permission
+// exports.checkUserPerm = async (req, action) => {
+//     return new Promise(function(resolve, reject) {
+//         // route will continus if user has admin
+//         // if (req.session.roles.includes('Admin')) {
+//         //     next();
+//         // } else {
+//         switch (action) {
+//             case 'createTask':
+//                 checkPerm('App_permit_CreateT', req.body.app, req.session.username, req.pool)
+//                     .then(result => {
+//                         if (result === true) { resolve(true); }
+//                         else { resolve(false); }
+//                     }).catch(err => {
+//                         console.log('error in checking permit\n', err);
+//                         reject(err);
+//                     });
+//                 break;
+//             case 'createPlan':
+//                 checkPerm('App_permit_CreateP', req.body.app, req.session.username, req.pool)
+//                     .then(result => {
+//                         if (result === true) { resolve(true); }
+//                         else { resolve(false); }
+//                     }).catch(err => {
+//                         console.log('error in checking permit\n', err);
+//                         reject(err);
+//                     });
+//                 break;
+//             case 'setToDo':
+//                 checkPerm('App_permit_ToDoList', req.body.app, req.session.username, req.pool)
+//                     .then(result => {
+//                         if (result === true) { resolve(true); }
+//                         else { resolve(false); }
+//                     }).catch(err => {
+//                         console.log('error in checking permit\n', err);
+//                         reject(err);
+//                     });
+//                 break;
+//             case 'setDoing':
+//                 checkPerm('App_permit_Doing', req.body.app, req.session.username, req.pool)
+//                     .then(result => {
+//                         if (result === true) { resolve(true); }
+//                         else { resolve(false); }
+//                     }).catch(err => {
+//                         console.log('error in checking permit\n', err);
+//                         reject(err);
+//                     });
+//                 break;
+//             case 'setDone':
+//                 checkPerm('App_permit_Doing', req.body.app, req.session.username, req.pool)
+//                     .then(result => {
+//                         if (result === true) { resolve(true); }
+//                         else { resolve(false); }
+//                     }).catch(err => {
+//                         console.log('error in checking permit\n', err);
+//                         reject(err);
+//                     });
+//                 break;
+//             case 'setClose':
+//                 checkPerm('App_permit_Close', req.body.app, req.session.username, req.pool)
+//                     .then(result => {
+//                         if (result === true) { resolve(true); }
+//                         else { resolve(false); }
+//                     }).catch(err => {
+//                         console.log('error in checking permit\n', err);
+//                         reject(err);
+//                     });
+//                 break;
+//             default:
+//                 reject('error: no parameter to query');
+//         }
+//     });
+// };

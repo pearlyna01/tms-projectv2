@@ -13,12 +13,10 @@ const {
     createTask, createPlan,
     setToDo, setDoing, setDone, setClose,
     getAppPlans, getAppTasks, getAppInfo, getTaskDetail,
-    getUserPerms,
-    doneTask 
+    getUserPerms 
 } = require('../controllers/taskController');
 
-// test sending email NEED TO REMOVE THIS
-// router.route('/sendMail').put(doneTask);
+
 
 // Get all plans of an app
 router.route('/getAppPlans/:app').get( getAppPlans);
@@ -75,8 +73,7 @@ router.route('/setClose').put(
 // Admin: create App
 router.route('/createApp').post(
     isAuthenticated, 
-    //authorizeRoles(['Admin']), 
-    addReq('Admin'),
+    addReq('Project Manager'),
     checkUserGrp,
     createApp
 );

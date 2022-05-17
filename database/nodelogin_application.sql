@@ -28,13 +28,12 @@ CREATE TABLE `application` (
   `App_Rnumber` int NOT NULL DEFAULT '0',
   `App_startDate` date DEFAULT NULL,
   `App_endDate` date DEFAULT NULL,
-  `App_permit_Open` json DEFAULT NULL,
-  `App_permit_toDoList` json DEFAULT NULL,
-  `App_permit_Doing` json DEFAULT NULL,
-  `App_permit_Done` json DEFAULT NULL,
-  `App_permit_Close` json DEFAULT NULL,
-  `App_permit_CreateT` json DEFAULT NULL,
-  `App_permit_CreateP` json DEFAULT NULL,
+  `App_permit_Open` varchar(45) DEFAULT NULL,
+  `App_permit_toDoList` varchar(45) DEFAULT NULL,
+  `App_permit_Doing` varchar(45) DEFAULT NULL,
+  `App_permit_Done` varchar(45) DEFAULT NULL,
+  `App_permit_Close` varchar(45) DEFAULT NULL,
+  `App_permit_Create` varchar(45) DEFAULT NULL,
   `Audit` longtext,
   PRIMARY KEY (`App_Acronym`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
@@ -46,7 +45,7 @@ CREATE TABLE `application` (
 
 LOCK TABLES `application` WRITE;
 /*!40000 ALTER TABLE `application` DISABLE KEYS */;
-INSERT INTO `application` VALUES ('ACRO2','test value',10,'2003-04-23','2003-04-06','[\"Admin\", \"Lead\"]','[\"Admin\"]','[\"Admin\"]','[\"Admin\"]','[\"Admin\"]','[\"Admin\", \"Lead\"]','[\"Admin\"]',NULL),('ACRO3','test value',9,'2003-04-23','2003-04-06','[\"Admin\"]','[\"Admin\"]','[\"Admin\"]','[\"Admin\", \"Project Lead\"]','[\"Admin\"]','[\"Admin\", \"Lead\"]','[\"Admin\"]',NULL),('APP0','sdfsdfsdf',0,'2022-05-05','2022-05-05','[\"Admin\", \"Lead\", \"Project Manager\"]','[\"Team Member\", \"Lead\"]','[\"Team Member\", \"Lead\", \"Admin\"]','[\"Lead\", \"Team Member\", \"Project Manager\"]','[\"Team Member\", \"Lead\", \"Project Manager\"]','[\"Lead\", \"Team Member\", \"Project Manager\"]','[\"Team Member\", \"Admin\"]',NULL),('APP4','something',1,'2022-05-12','2022-05-12','[\"Admin\"]','[\"Admin\", \"Lead\"]','[\"Project Manager\"]','[\"Project Manager\"]','[\"Team Member\"]','[\"Team Member\", \"Admin\"]','[\"Team Member\"]',NULL),('TWST','oiugog u',0,'2022-05-09','2022-05-09','[\"\"]','[\"\"]','[\"\"]','[\"\"]','[\"\"]','[\"\"]','[\"\"]',NULL);
+INSERT INTO `application` VALUES ('ACRO2','test value',10,'2003-04-23','2003-04-06','Lead','Project Manager','Team Member','Team Member','Lead','Lead',NULL),('ACRO3','test value',12,'2003-04-23','2003-04-06','Lead','Project Manager','Team Member','Team Member','Lead','Lead',NULL),('APP0','sdfsdfsdf',0,'2022-05-05','2022-05-05','Lead','Project Manager','Team Member','Team Member','Lead','Lead',NULL),('APP4','something',1,'2022-05-12','2022-05-12','Lead','Project Manager','Team Member','Team Member','Lead','Lead',NULL),('GRPS','testing each group ',3,'2022-05-17','2022-05-17','Lead','Project Manager','Team Member','Team Member','Lead','Lead',NULL),('TWST','oiugog u',0,'2022-05-09','2022-05-09','Lead','Project Manager','Team Member','Team Member','Lead','Lead',NULL);
 /*!40000 ALTER TABLE `application` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -59,4 +58,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-05-14 12:18:25
+-- Dump completed on 2022-05-17 17:48:07
