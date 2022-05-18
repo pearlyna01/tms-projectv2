@@ -3,8 +3,12 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { DragDropContext, Droppable, Draggable} from 'react-beautiful-dnd';
 import { atom,useAtom  } from 'jotai';
 import { Link } from 'react-router-dom';
+import EditTask from './parts/EditTask';
+import { UserAtom } from "./Login";
+import {BsInfoCircle} from 'react-icons/bs';
 
 const isLeadAtom = atom(false);
+export const plansAtom = atom([]);
 
 // function to modify the columns
 // adding the className "col-OK" / "col-NO" if the user has the permissions to the column
@@ -37,13 +41,81 @@ function modifyCols(obj) {
     }
 }
 
+// Modal component
+const Modal = ({row, taskID}) => {
+    let createDate = new Date(row.Task_createDate);
+
+    return(
+        <>
+        <div className='row m-0'>
+            <div className="col"></div>
+            <div className="col-auto">
+                <button
+                type="button"
+                className="btn btn-primary btn-sm"
+                data-bs-toggle="modal"
+                data-bs-target={taskID}>
+                    <small>View Task</small> 
+                </button>
+            </div>
+        </div>
+
+        {/* Modal to view task details */}
+        <div className="modal fade" id={row.Task_id} tabIndex="-1" aria-hidden="true">
+            <div className="modal-dialog">
+                <div className="modal-content">
+                    <div className="modal-header">
+                        <h5 className="modal-title">{row.Task_name}</h5>
+                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div className="modal-body">
+                        <div className='row mb-2'>
+                            <div className='font-monospace'>Description:</div>
+                            <span className='ms-2'>{row.Task_description}</span>
+                        </div>
+                        <div className="row mb-1 task-owner">
+                            <div className="col-5 font-monospace">Task Owner:</div>
+                            <div className="col">{row.Task_owner}</div>
+                        </div>
+                        <div className="row mb-1 ">
+                            <div className="col-5 font-monospace">Task Creator:</div>
+                            <div className="col">{row.Task_creator}</div>
+                        </div>
+                        <div className="row mb-1 task-owner">
+                            <div className="col-5 font-monospace">Task Created on:</div>
+                            <div className="col">{createDate.toDateString()}</div>
+                        </div>
+                        <div className="row mb-1">
+                            <div className="col-5 font-monospace">Task id:</div>
+                            <div className="col">{row.Task_id}</div>
+                        </div>
+                        <div className="row mb-1 task-owner">
+                            <div className="col-5 font-monospace">Task plan:</div>
+                            <div className="col">{row.Task_plan}</div>
+                        </div>
+                        <hr />
+                        <div className='font-monospace'>Task notes: </div>
+                        <p className='notesH overflow-auto' style={{ "whiteSpace": "pre-line" }}> {row.Task_notes}</p>
+                        <div>
+
+                        </div>
+                    </div>
+                    <div className="modal-footer">
+                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </>
+    )
+}
 // container to render the task details
 const TaskView = ({row,index}) => {
     const taskID = `#${row.Task_id}`;
     let params = useParams();
-    let createDate = new Date(row.Task_createDate);
+    
     const [lead, setLead] = useAtom(isLeadAtom);
-    const editLink = `/editTask/${params.app}/${row.Task_id}`;
+ 
     return (
         <Draggable draggableId={row.Task_id} index={index}> 
         {(provided) => {
@@ -58,81 +130,13 @@ const TaskView = ({row,index}) => {
                         <small>{row.Task_owner}</small>
                     </div>
 
-                    {/* VIEW TASK  */}
-                    {/* Button trigger 'view tasks' */}
-                    <div className='row m-0'>
-                        <div className="col">
-                            {
-                                lead && row.Task_state==='open' ? 
-                                <Link to={editLink}><button
-                                type="button"
-                                className="btn btn-colorP btn-sm"
-                                >
-                                   <small>Edit Task</small> 
-                                </button></Link>
-                             :null
-                            }
-                        </div>
-                        <div className="col-auto">
-                            <button
-                            type="button"
-                            className="btn btn-primary btn-sm"
-                            data-bs-toggle="modal"
-                            data-bs-target={taskID}>
-                                <small>View Task</small> 
-                            </button>
-                        </div>
+                    {/* VIEW/EDIT TASK  */}
+                    {
+                        lead && row.Task_state ==='open' ? 
                         
-                    </div>
-
-
-                    {/* Modal to view task details */}
-                    <div className="modal fade" id={row.Task_id} tabIndex="-1" aria-hidden="true">
-                        <div className="modal-dialog">
-                            <div className="modal-content">
-                                <div className="modal-header">
-                                    <h5 className="modal-title">{row.Task_name}</h5>
-                                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div className="modal-body">
-                                    <div className='row mb-2'>
-                                        <div className='font-monospace'>Description:</div>
-                                        <span className='ms-2'>{row.Task_description}</span>
-                                    </div>
-                                    <div className="row mb-1 task-owner">
-                                        <div className="col-5 font-monospace">Task Owner:</div>
-                                        <div className="col">{row.Task_owner}</div>
-                                    </div>
-                                    <div className="row mb-1 ">
-                                        <div className="col-5 font-monospace">Task Creator:</div>
-                                        <div className="col">{row.Task_creator}</div>
-                                    </div>
-                                    <div className="row mb-1 task-owner">
-                                        <div className="col-5 font-monospace">Task Created on:</div>
-                                        <div className="col">{createDate.toDateString(0)}</div>
-                                    </div>
-                                    <div className="row mb-1">
-                                        <div className="col-5 font-monospace">Task id:</div>
-                                        <div className="col">{row.Task_id}</div>
-                                    </div>
-                                    <div className="row mb-1 task-owner">
-                                        <div className="col-5 font-monospace">Task plan:</div>
-                                        <div className="col">{row.Task_plan}</div>
-                                    </div>
-                                    <hr />
-                                    <div className='font-monospace'>Task notes: </div>
-                                    <p className='notesH overflow-auto' style={{ "whiteSpace": "pre-line" }}> {row.Task_notes}</p>
-                                    <div>
-
-                                    </div>
-                                </div>
-                                <div className="modal-footer">
-                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
+                        <EditTask row={row} taskID={taskID}/>
+                        : <Modal row={row} taskID={taskID}/>
+                    }
                 </div>
             );
         }}
@@ -203,7 +207,7 @@ const ViewTasks = () =>{
     //const [oldTasks, setOldT] = React.useState([]);
     const [userPerm, setUserPerm] = React.useState([]);
     const [appDetail, setAppDetail] = React.useState([]);
-    const [appPlans, setAppPlans] = React.useState([]);
+    const [appPlans, setAppPlans] = useAtom(plansAtom);
     const [lead, setLead] = useAtom(isLeadAtom);
 
     function updateTask(source, destination) { 
@@ -343,9 +347,9 @@ const ViewTasks = () =>{
                         <div className="col overflow-auto col-height open"
                             {...provided.droppableProps} ref={provided.innerRef}
                         >
-                            {tasks.open?.map((row, index) => (
-                                <TaskView key={row.Task_id} row={row} index={index}/>
-                            ))}
+                            {tasks.open?.map((row, index) => 
+                                (<TaskView key={row.Task_id} row={row} index={index}/> )
+                            )}
                             {provided.placeholder}
                         </div>
                     )}

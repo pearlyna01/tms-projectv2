@@ -13,8 +13,6 @@ import ViewTasks from "./components/ViewTasks";
 import CreateApp from "./components/CreateApp";
 import CreatePlan from "./components/CreatePlan";
 import CreateTask from "./components/CreateTask";
-import EditApp from "./components/EditApp";
-import EditTask from "./components/EditTask";
 import Dashboard from "./components/Dashboard";
 
 import UserNav from "./components/navbar/UserNav";
@@ -33,8 +31,6 @@ function App() {
 
           <Route path="/createPlan/:app" element={<CreatePlan/>}/>
           <Route path='/createTask/:app' element={<CreateTask />}/>
-          <Route path='/editApp/:app' element={<UserNav><EditApp/></UserNav>}/>
-          <Route path='/editTask/:app/:id' element={<UserNav><EditTask/></UserNav>}/>
 
           <Route path='/dashboard/:app' element={<UserNav> <ViewTasks/> </UserNav>} />
 

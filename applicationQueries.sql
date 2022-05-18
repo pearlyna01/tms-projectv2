@@ -1,4 +1,7 @@
-SELECT * FROM nodelogin.application;
+SELECT 
+    *
+FROM
+    nodelogin.application;
 
 SELECT App_Acronym, App_Description, App_startDate, App_endDate FROM nodelogin.applications;
 /* create app */

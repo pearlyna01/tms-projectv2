@@ -1,5 +1,5 @@
 SELECT * FROM nodelogin.task;
-
+SELECT * FROM nodelogin.task WHERE Task_id = "GRPS_2";
 /* set task to "to do" */
 UPDATE nodelogin.task SET Task_state='to_do', Task_notes=CONCAT('note',Task_notes) WHERE Task_id='ACRO2_5';
 

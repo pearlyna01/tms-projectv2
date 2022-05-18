@@ -11,8 +11,9 @@ const {
 const { 
     createApp, getAllApps,
     createTask, createPlan,
+    editTask, editApp,
     setToDo, setDoing, setDone, setClose,
-    getAppPlans, getAppTasks, getAppInfo, getTaskDetail,
+    getAppPlans, getAppTasks, getAppInfo, getTaskDetail, getOneAppInfo,
     getUserPerms 
 } = require('../controllers/taskController');
 
@@ -30,22 +31,28 @@ router.route('/getAppTask/:taskID').get( getTaskDetail);
 // Get an App info 
 router.route('/getAppInfo/:app').get( getAppInfo);
 
+// Get an App info (with permission details)
+router.route('/getOneAppInfo/:app').get( getOneAppInfo);
+
 // Get all Apps info
 router.route('/getAllApps').get( getAllApps);
 
 // Get user permissions in an App
 router.route('/getPerms/:app').get( getUserPerms);
 
-// Lead/user with createT permit: create Task
+// Lead/user with create permit: create Task
 router.route('/createTask').post(
     isAuthenticated,
     createTask
 );
+// Lead/user with create permit: edit task
+router.route('/editTask').put( isAuthenticated, editTask);
 // PM/user with createP permit: create Plan
 router.route('/createPlan').post(
     isAuthenticated,
     createPlan
 );
+
 
 
 // PM/user with todo permit: approve task/ open->toDo
@@ -69,13 +76,14 @@ router.route('/setClose').put(
     setClose
 );
 
-// ------------ADMIN ROUTES-------------
-// Admin: create App
+// PM: create App
 router.route('/createApp').post(
     isAuthenticated, 
-    addReq('Project Manager'),
-    checkUserGrp,
     createApp
 );
-
+// PM: create App
+router.route('/editApp').post(
+    isAuthenticated, 
+    editApp
+);
 module.exports = router;

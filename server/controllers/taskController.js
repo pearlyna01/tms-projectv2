@@ -1,7 +1,7 @@
 const sendEmail = require('../modules/sendEmail');
 const getQuery = require('../modules/getQuery');
 const noteGen = require('../modules/noteGen');
-const { checkUserPerm,userGrps } = require('../modules/checkAuth'); 
+const { checkUserPerm, userGrps } = require('../modules/checkAuth'); 
 
 // Get details of a task of a App
 exports.getTaskDetail = async(req, res) => {
@@ -140,42 +140,120 @@ exports.getAllApps = async (req, res) => {
     }
 };
 
-// Admin: Create App
-exports.createApp = async (req, res) => {
-    
-    const {
-        acronym, desc,
-        startDate, endDate, 
-        pOpen, pToDo, pDoing, pDone, pClose,
-        create
-    } = req.body;
-    console.log(pOpen)
-    
-    const query = `INSERT INTO nodelogin.application(App_Acronym, App_Description, 
-        App_startDate, App_endDate, 
-        App_permit_Open, App_permit_toDoList, App_permit_Doing, App_permit_Done, App_permit_Close,
-        App_permit_Create) VALUES 
-        ('${acronym}','${desc}','${startDate}','${endDate}', 
-        '${pOpen}','${pToDo}','${pDoing}','${pDone}',
-        '${pClose}','${create}'); `;
-
-    getQuery.processQuery(query, req.pool).then( result => {
-        // send error if app acronym already exists 
-        if (result === "Duplicate") {
-            res.status(400).send({ message: 'App already exist.'});
-        } else {
-            res.status(200).send({ message: "Application successfully created!"});
-        }
-    }).catch((err) => { 
-        // send 500 status 
-        console.log(err)
-        res.status(500).send(); 
-        // Throw async to escape the promise chain
-        throw err;
-    }); 
+// Get ONE App info 
+exports.getOneAppInfo = async(req, res) => {
+    const query = `SELECT * FROM nodelogin.application WHERE App_Acronym='${req.params.app}';`;
+    try {
+        const result = await getQuery.processQuery(query,req.pool);
+        res.send(result[0]);
+    } catch (error) {
+        console.log(`Failed to retrieve ${req.params.app} info`)
+        res.sendStatus(500);
+    }
 };
 
 // ------- with checkPerm function---------------------
+// PM: Create App
+exports.createApp = async (req, res) => {
+try {
+    const checkVal = await checkUserPerm(req,'createPlan');
+    if (checkVal === false) {
+        res.sendStatus(403);
+    } else {
+        const {
+            acronym, desc,
+            startDate, endDate, 
+            pOpen, pToDo, pDoing, pDone, pClose,
+            create
+        } = req.body;
+
+        const nowDate = new Date();
+        const note = `Application ${acronym} is created on ${nowDate.toDateString()}`;
+        const query = `INSERT INTO nodelogin.application(App_Acronym, App_Description, 
+            App_startDate, App_endDate, 
+            App_permit_Open, App_permit_toDoList, App_permit_Doing, App_permit_Done, App_permit_Close,
+            App_permit_Create, Audit) VALUES 
+            ('${acronym}','${desc}','${startDate}','${endDate}', 
+            '${pOpen}','${pToDo}','${pDoing}','${pDone}',
+            '${pClose}','${create}','${note}'); `;
+    
+        getQuery.processQuery(query, req.pool).then( result => {
+            // send error if app acronym already exists 
+            if (result === "Duplicate") {
+                res.status(400).send({ message: 'App already exist.'});
+            } else {
+                res.status(200).send({ message: "Application successfully created!"});
+            }
+        }).catch((err) => { 
+            // send 500 status 
+            console.log(err)
+            res.status(500).send(); 
+            // Throw async to escape the promise chain
+            throw err;
+        }); 
+    }
+} catch (error) {
+    console.log(error)
+    res.sendStatus(500);
+}
+};
+
+// PM: edit App
+exports.editApp = async (req, res) => {
+try {
+    const checkVal = await checkUserPerm(req,'createPlan');
+    if (checkVal === false) {
+        res.sendStatus(403);
+    } else {
+        const {
+            app, desc,
+            startDate, endDate, 
+            pOpen, pToDo, pDoing, pDone, pClose,
+            create
+        } = req.body;
+
+        const nowDate = new Date();
+        let note = `Application ${app} is updated on ${nowDate.toDateString()}\n`;
+        //App_Description, App_startDate, App_endDate, 
+
+        // update the note if there is any changes 
+        const checkAppQuery = `SELECT 
+        App_permit_Open, App_permit_toDoList, App_permit_Doing, App_permit_Done, App_permit_Close,
+        App_permit_Create FROM nodelogin.application WHERE App_Acronym='${app}';`;
+        const result3 = await getQuery.processQuery(checkAppQuery,req.pool);
+
+        const arr = [pOpen,pToDo,pDoing,pDone,pClose,create];
+        let index = 0;
+        for (const key in result3[0]) {
+            if (result3[0][key]!==arr[index]) {
+                note += `${key} updated from ${result3[0][key]} to ${arr[index]}\n`;
+            }
+            index++;
+        }
+        note += '-------------\n';
+        console.log(note);
+
+        const query = `UPDATE nodelogin.application SET App_Description='${desc}', 
+        App_startDate='${startDate}', App_endDate='${endDate}', 
+            App_permit_Open='${pOpen}', App_permit_toDoList='${pToDo}', App_permit_Doing='${pDoing}', 
+            App_permit_Done='${pDone}', App_permit_Close='${pClose}',App_permit_Create='${create}', Audit=CONCAT('${note}',Audit) 
+            WHERE App_Acronym='${app}';`;
+    
+        getQuery.processQuery(query, req.pool).then( result => {
+            res.status(200).send({ message: "Application successfully created!"});
+        }).catch((err) => { 
+            // send 500 status 
+            console.log(err)
+            res.status(500).send(); 
+            throw err;
+        }); 
+    }
+} catch (error) {
+    console.log(error)
+    res.sendStatus(500);
+}
+};
+
 // Lead: Create Task
 exports.createTask = async (req, res) => {
 try {
@@ -246,7 +324,7 @@ exports.editTask = async(req, res) => {
             const {desc, plan, taskId} = req.body;
 
             let note = noteGen.makeNote(req.session.username, 'open');
-            note = note + `\n new changes to task.\nDescription: ${desc}\nPlan: ${plan}\n`;
+            note = note + `>>>New changes to task>>>\nDescription: ${desc}\nPlan: ${plan}\n`;
 
             const query = `UPDATE nodelogin.task SET Task_description='${desc}', Task_plan='${plan}',Task_notes=CONCAT('${note}',Task_notes)
             WHERE Task_id='${taskId}';`;

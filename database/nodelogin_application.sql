@@ -45,7 +45,7 @@ CREATE TABLE `application` (
 
 LOCK TABLES `application` WRITE;
 /*!40000 ALTER TABLE `application` DISABLE KEYS */;
-INSERT INTO `application` VALUES ('ACRO2','test value',10,'2003-04-23','2003-04-06','Lead','Project Manager','Team Member','Team Member','Lead','Lead',NULL),('ACRO3','test value',12,'2003-04-23','2003-04-06','Lead','Project Manager','Team Member','Team Member','Lead','Lead',NULL),('APP0','sdfsdfsdf',0,'2022-05-05','2022-05-05','Lead','Project Manager','Team Member','Team Member','Lead','Lead',NULL),('APP4','something',1,'2022-05-12','2022-05-12','Lead','Project Manager','Team Member','Team Member','Lead','Lead',NULL),('GRPS','testing each group ',3,'2022-05-17','2022-05-17','Lead','Project Manager','Team Member','Team Member','Lead','Lead',NULL),('TWST','oiugog u',0,'2022-05-09','2022-05-09','Lead','Project Manager','Team Member','Team Member','Lead','Lead',NULL);
+INSERT INTO `application` VALUES ('ACRO2','test app',10,'2022-05-18','2022-05-18','Team Member','Project Manager','Team Member','Team Member','Lead','Lead','Application ACRO2 is updated on Wed May 18 2022\nApp_permit_Open updated from Lead to Team Member\n-------------\nsdfsdfsdfsdf'),('ACRO3','test value',12,'2003-04-23','2003-04-06','Lead','Project Manager','Team Member','Team Member','Lead','Lead','App created'),('APP4','something',1,'2022-05-12','2022-05-12','Lead','Project Manager','Team Member','Team Member','Lead','Lead','App created'),('GRPS','testing each group ',3,'2022-05-17','2022-05-17','Admin','Project Manager','Team Member','Team Member','Lead','Team Member','App created');
 /*!40000 ALTER TABLE `application` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -58,4 +58,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-05-17 17:48:07
+-- Dump completed on 2022-05-18 17:53:32
