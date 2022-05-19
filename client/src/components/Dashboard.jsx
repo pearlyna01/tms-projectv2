@@ -23,43 +23,47 @@ const emptyApp = {
 const appDetails = atom(emptyApp);
 const groups = atom([]);
 const isUpdated = atom(false);
+const isOpen = atom(false);
 
-
-const AppEditModal = () => {
+const AppEditModal = ({}) => {
     // start/end/current dates
     const [startDate, setStartDate] = useState(new Date);
     const [endDate, setEndDate] = useState(new Date);
     
     // Application Description Input
     const [currentApp, setCurrentApp] = useAtom(appDetails);
-    const [appDesc, setAppDesc] = useState(currentApp.App_Description);
+    const [appDesc, setAppDesc] = useState('');
 
     // App permit open
-    const [permitOpen, setPermitOpen] = useState(currentApp.App_permit_Open);
+    const [permitOpen, setPermitOpen] = useState('');
     // App permit todo
-    const [permitToDo, setPermitToDo] = useState(currentApp.App_permit_toDoList);
+    const [permitToDo, setPermitToDo] = useState('');
     // App permit doing
-    const [permitDoing, setPermitDoing] = useState(currentApp.App_permit_Doing);
+    const [permitDoing, setPermitDoing] = useState('');
     // App permit done
-    const [permitDone, setPermitDone] = useState(currentApp.App_permit_Done);
+    const [permitDone, setPermitDone] = useState('');
     // App permit close
-    const [permitClose, setPermitClose] = useState(currentApp.App_permit_Close);
+    const [permitClose, setPermitClose] = useState('');
     // App permit create 
-    const [permitCreate, setPermitCreate] = useState(currentApp.App_permit_Create);
+    const [permitCreate, setPermitCreate] = useState('');
 
     const [options, setOptions] = useAtom(groups);
 
     const [isUpdate, setIsUpdate] = useAtom(isUpdated);
 
+    const promise = new Promise((resolve, reject) => {
+        
+        resolve();
+    });
+
     if (isUpdate) {
-        //setIsUpdate(false);
+        setIsUpdate(!isUpdate);
         // start/end/current dates
         setStartDate(new Date(currentApp.App_startDate));
         setEndDate(new Date(currentApp.App_endDate));
     
         // Application Description Input
         setAppDesc(currentApp.App_Description);
-
         // App permit open
         setPermitOpen(currentApp.App_permit_Open);
         // App permit todo
@@ -72,7 +76,6 @@ const AppEditModal = () => {
         setPermitClose(currentApp.App_permit_Close);
         // App permit create 
         setPermitCreate(currentApp.App_permit_Create);
-        setIsUpdate(false);
     }
 
     function handleUpdate() {
@@ -285,6 +288,7 @@ const Dashboard = () => {
     const [isLoaded, setIsLoaded] = useState(false);
     const [dataFetch, setDataFetch] = useState(null);
     
+    const [is_open, setIsOpen] = useAtom(isOpen);
     const [user, setUserAtom ] = useAtom(UserAtom);
     const [options, setOptions] = useAtom(groups);
     const [isUpdate, setIsUpdate] = useAtom(isUpdated);
@@ -321,6 +325,7 @@ const Dashboard = () => {
             .then(data => {
                 setCurrentApp(data);
                 setIsUpdate(true);
+                setIsOpen(true);
             })
             .catch(e => alert('failed to load info'));
     }
@@ -393,13 +398,14 @@ const Dashboard = () => {
                 </div> */
                 }
             </div>
+
             <AppEditModal/>
         </div> 
         </>
             );
-        } else {
-            return (<h4>Loading data</h4>);
-        }
+    } else {
+        return (<h4>Loading data</h4>);
+    }
 }
     
 

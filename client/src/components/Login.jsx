@@ -41,9 +41,6 @@ function Login(){
         
         xhttp.onreadystatechange = function() {
             if (this.readyState === 4 && this.status === 200) {
-                // Login successful
-                alert('login successful');
-
                 // set client session
                 console.log('login resp',this.responseText);
                 setUserAtom({username: username, isAuthenticated: true, roles:this.responseText});

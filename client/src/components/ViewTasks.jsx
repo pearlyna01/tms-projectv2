@@ -109,6 +109,7 @@ const Modal = ({row, taskID}) => {
         </>
     )
 }
+
 // container to render the task details
 const TaskView = ({row,index}) => {
     const taskID = `#${row.Task_id}`;
@@ -156,29 +157,29 @@ function reorder(array, start, end) {
 // function to modify list of tasks if user has the perms to do it
 // AND get the task's latest details
 function changeList(arr, source, destination) {
-    return new Promise((resolve, reject) => {
-        let arrCopy = { ...arr };
-        console.log(arrCopy)
-        let sourceCopy = arrCopy[source.droppableId];
-        let destCopy = arrCopy[destination.droppableId];
-        const [removed] = sourceCopy.splice(source.index, 1);
+    
+    let arrCopy = { ...arr };
+    console.log(arrCopy)
+    let sourceCopy = arrCopy[source.droppableId];
+    let destCopy = arrCopy[destination.droppableId];
+    const [removed] = sourceCopy.splice(source.index, 1);
 
-        destCopy.splice(destination.index, 0, removed);
+    destCopy.splice(destination.index, 0, removed);
 
-        arrCopy[source.droppableId] = sourceCopy;
-        arrCopy[destination.droppableId] = destCopy;
-        
+    arrCopy[source.droppableId] = sourceCopy;
+    arrCopy[destination.droppableId] = destCopy;
+    
+    return arrCopy;
         // get task details
-        let id = arrCopy[destination.droppableId][destination.index].Task_id;
-        console.log(`fetching data task id ${id}`)
-        fetch(`../../task/getAppTask/${id}`)
-            .then(res => res.json())
-            .then(data => {
-                arrCopy[destination.droppableId][destination.index] = data;
-                resolve(arrCopy);
-            })
-            .catch(e => reject(e));
-    });
+        // let id = arrCopy[destination.droppableId][destination.index].Task_id;
+        // console.log(`fetching data task id ${id}`)
+        // fetch(`../../task/getAppTask/${id}`)
+        //     .then(res => res.json())
+        //     .then(data => {
+        //         arrCopy[destination.droppableId][destination.index] = data;
+        //         resolve(arrCopy);
+        //     })
+        //     .catch(e => reject(e));
 }
 
 // returns the route link based on the action
@@ -210,42 +211,78 @@ const ViewTasks = () =>{
     const [appPlans, setAppPlans] = useAtom(plansAtom);
     const [lead, setLead] = useAtom(isLeadAtom);
 
-    function updateTask(source, destination) { 
-        const actLink = getAction(destination.droppableId);
-        //const tasksCopy = Object.assign({},tasks,{});        
-        const task_id = tasks[source.droppableId][source.index].Task_id;
+    function refreshTasks() {
+        const link1 = `../../task/getAppTasks/${params.app}`;
+        fetch(link1).then( res => res.json() )
+                    .then( data => setTasks(data));
+    }
+
+    
+    // function updateTask(source, destination) { 
+    //     const actLink = getAction(destination.droppableId);
+    //     //const tasksCopy = Object.assign({},tasks,{});     
+    //     console.log(tasks[source.droppableId][source.index])   
+    //     const task_id = tasks[source.droppableId][source.index].Task_id;
         
+    //     // update board
+    //     const a_list = changeList(tasks, source, destination);
+    //     setTasks(a_list);
+
+    //     // send http request to update task state
+    //     const xhttp = new XMLHttpRequest();
+    //     xhttp.onreadystatechange = function() {
+    //         // modify the tasks if the task state has been updated
+    //         if (this.readyState === 4 && this.status === 200) {
+    //             // update board
+    //             // const a_list = changeList(tasks, source, destination);
+    //             // setTasks(a_list);
+
+    //             // changeList(tasks, source, destination)
+    //             //     .then(result => setAppDetail(result))
+    //             //     .catch(e => console.log(e));
+    //             //refreshTasks();
+    //             //return 'OK';
+    //             //setOldT(a_list);
+    //             console.log(tasks)
+    //             alert('Updated task');
+    //         // alert if user don't have the permissions to update the task state
+    //         } else if (this.readyState === 4 && this.status === 403) {
+    //             alert("User don't have permission to update state.");
+    //         // alert if unable to update task state
+    //         } else if (this.readyState === 4 && this.status > 401) {
+    //             //return 'notOK';    // revert back to old list
+    //             alert('Unable to update state');
+    //         } 
+    //     }
+    //     xhttp.open("PUT",actLink,true);
+    //     xhttp.setRequestHeader("Content-type", "application/json");
+    //     xhttp.send(JSON.stringify({ taskId: task_id, app: params.app}));
+    // }
+
+    function updateTask(source,destination) { 
+        //const tasksCopy = Object.assign({},tasks,{});     
+        //console.log(tasks[source.droppableId][source.index])           
         // update board
-        //const a_list = changeList(tasks, source, destination);
-        //setTasks(a_list);
+        const actLink = getAction(destination.droppableId);
+        const task_id = tasks[source.droppableId][source.index].Task_id;
+
+        let result = changeList(tasks, source, destination);
+        setTasks(result);
 
         // send http request to update task state
         const xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
             // modify the tasks if the task state has been updated
             if (this.readyState === 4 && this.status === 200) {
-                // update board
-                // const a_list = changeList(tasks, source, destination);
-                // setTasks(a_list);
-
-                changeList(tasks, source, destination)
-                    .then(result => setAppDetail(result))
-                    .catch(e => console.log(e));
-                //return 'OK';
-                //setOldT(a_list);
+                refreshTasks();
             // alert if user don't have the permissions to update the task state
-            } else 
-            if (this.readyState === 4 && this.status === 403) {
-                //setTasks(oldTasks);
-                //console.log('revert\n',tasks)
-                //return 'notOK';    // revert back to old list
-                //console.log('reverted to old state')
+            } else if (this.readyState === 4 && this.status === 403) {
                 alert("User don't have permission to update state.");
+                refreshTasks();
             // alert if unable to update task state
             } else if (this.readyState === 4 && this.status > 401) {
-                //return 'notOK';    // revert back to old list
                 alert('Unable to update state');
-                //setTasks(oldTasks);
+                refreshTasks();
             } 
         }
         xhttp.open("PUT",actLink,true);
@@ -296,12 +333,20 @@ const ViewTasks = () =>{
             //setOldT(listCopy);
         } else {
             if (destination.droppableId === "open") { return; }
-            //const copy = { ...tasks};
-            //console.log('ORIGN',copy);
-            updateTask(source,destination);
-            // if (result === 'notOK') {
-            //     setTasks(copy);
-            // }
+
+            if (source.droppableId === "open" && destination.droppableId === "to_do" && userPerm.App_permit_toDoList) {
+                updateTask(source,destination);
+            } else if (((source.droppableId === "to_do" && destination.droppableId === "doing") || 
+                        (source.droppableId === "doing" && destination.droppableId === "to_do")) && userPerm.App_permit_Doing) {
+                updateTask(source,destination);
+            } else if (((source.droppableId === "done" && destination.droppableId === "doing") || 
+                        (source.droppableId === "doing" && destination.droppableId === "done")) && userPerm.App_permit_Done) {
+                updateTask(source,destination);
+            } else if (source.droppableId === "done" && destination.droppableId === "close" && userPerm.App_permit_Close) {
+                updateTask(source,destination);
+            } else {
+                return;
+            } 
         } 
     };
 

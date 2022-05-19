@@ -60,7 +60,6 @@ router.route('/disableUser/:user').post(
 );
 router.route('/getGrpNames').get(
     isAuthenticated, 
-    authorizeRoles(['Admin']), 
     getGrpNames
 );
 router.route('/getGrpNames/:username').get(
