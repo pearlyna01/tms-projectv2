@@ -196,6 +196,16 @@ exports.checkUserPerm = async (req, action) => {
                     })
                     .catch(e => reject(e));
                 break;
+            case 'setOpen':
+                    const query6 = `SELECT App_permit_Open FROM nodelogin.application WHERE App_Acronym="${req.body.app}";`;
+                    getQuery.processQuery(query6, req.pool)
+                        .then(data => {
+                            const grp = data[0].App_permit_Open;
+                            checkGroup(req.session.username, grp, req.pool)
+                                .then(result => resolve(result));
+                        })
+                        .catch(e => reject(e));
+                    break;
             case 'setToDo':
                 const query2 = `SELECT App_permit_ToDoList FROM nodelogin.application WHERE App_Acronym="${req.body.app}";`;
                 getQuery.processQuery(query2, req.pool)

@@ -2,12 +2,12 @@ import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { DragDropContext, Droppable, Draggable} from 'react-beautiful-dnd';
 import { atom,useAtom  } from 'jotai';
-import { Link } from 'react-router-dom';
 import EditTask from './parts/EditTask';
-import { UserAtom } from "./Login";
-import {BsInfoCircle} from 'react-icons/bs';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const isLeadAtom = atom(false);
+const taskAtom = atom([]);
 export const plansAtom = atom([]);
 
 // function to modify the columns
@@ -41,9 +41,118 @@ function modifyCols(obj) {
     }
 }
 
-// Modal component
+// Modal component for editing plans
+const ModalEditPlan = ({plan}) => {
+    let params = useParams();
+    let planId = `#${plan.Plan_MVP_name}`;
+    const [startDate, setStartDate] = React.useState(new Date(plan.Plan_startDate));
+    const [endDate, setEndDate] = React.useState(new Date(plan.Plan_endDate));
+    const [appPlans, setAppPlans] = useAtom(plansAtom);
+
+    function handleSubmit() {
+        //e.preventDefault();
+        const linkForm = `../../task/editPlan`;
+        const xhttp = new XMLHttpRequest();
+        xhttp.open("POST",linkForm,true);
+        xhttp.setRequestHeader("Content-type", "application/json");
+        xhttp.onreadystatechange = function() {
+            if (this.readyState === 4 && this.status > 400) {
+                alert('Unable to create plan');
+            } else if (this.readyState === 4 && this.status === 200) {
+                // refresh plans
+                const link3 = `../../task/getAppPlans/${params.app}`;
+                fetch(link3).then(res => res.json())
+                    .then(result => setAppPlans(result))
+                    .catch(e => console.log(e));
+            } 
+        }
+        
+        xhttp.send(JSON.stringify({
+            name: plan.Plan_MVP_name,
+            startDate : startDate.getFullYear() + '-' + (startDate.getMonth()+1) + '-' + startDate.getDate(), 
+            endDate : endDate.getFullYear() + '-' + (endDate.getMonth()+1) + '-' + endDate.getDate(), 
+            app: params.app
+        }));
+    }
+
+    return(
+        <>
+        <button type="button" className="btn editBUT btn-sm" data-bs-toggle="modal" data-bs-target={planId}>
+            Edit Plan
+        </button>
+        <div className="modal fade" id={plan.Plan_MVP_name} tabIndex="-1" aria-labelledby={planId} aria-hidden="true">
+        <div className="modal-dialog">
+            <div className="modal-content">
+            <div className="modal-header">
+                <h6 className="modal-title float-end" id="exampleModalLabel">Plan Name: {plan.Plan_MVP_name}</h6>
+                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div className="modal-body">
+                {/* Start date input */}
+                <div className="row mb-3">
+                    <label className="form-label">Start Date</label>
+                    <DatePicker 
+                        selected={startDate} 
+                        onChange={(date) => setStartDate(date)} 
+                        className="form-control"
+                    />
+                </div>
+
+                {/* End date input */}
+                <div className="row mb-5">
+                    <label className="form-label">End Date</label> 
+                    <DatePicker
+                        onChange={(date) => setEndDate(date)} 
+                        className="form-control"
+                        selected={endDate}
+                    /> 
+                </div>
+            </div>
+            <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" className="btn btn-primary" onClick={() => handleSubmit()}>Save changes</button>
+            </div>
+            </div>
+        </div>
+        </div>
+        </>
+    )
+};
+
+// Modal component for view a task
 const Modal = ({row, taskID}) => {
     let createDate = new Date(row.Task_createDate);
+    let detail = row;
+    const [note, setNote] = React.useState('');
+    const [tasks, setTasks] = useAtom(taskAtom);
+    let params = useParams();
+    
+    function handleSubmit() {
+        //e.preventDefault();
+        const linkForm = `../../task/addComment`;
+        const xhttp = new XMLHttpRequest();
+        xhttp.open("PUT",linkForm,true);
+        xhttp.setRequestHeader("Content-type", "application/json");
+        xhttp.onreadystatechange = function() {
+            if (this.readyState === 4 && this.status === 200) {
+                const link1 = `../../task/getAppTasks/${params.app}`;
+                fetch(link1).then( res => res.json() )
+                            .then( data => {
+                                setTasks(data);
+                                console.log('tasks refreshed')
+                            });
+
+            } 
+            else if (this.readyState === 4 && this.status > 400) {
+                alert('Unable to update task');
+            }
+        }
+        
+        xhttp.send(JSON.stringify({
+            taskId: row.Task_id,
+            comment: note
+        }));
+    }
 
     return(
         <>
@@ -71,15 +180,15 @@ const Modal = ({row, taskID}) => {
                     <div className="modal-body">
                         <div className='row mb-2'>
                             <div className='font-monospace'>Description:</div>
-                            <span className='ms-2'>{row.Task_description}</span>
+                            <span className='ms-2'>{detail.Task_description}</span>
                         </div>
                         <div className="row mb-1 task-owner">
                             <div className="col-5 font-monospace">Task Owner:</div>
-                            <div className="col">{row.Task_owner}</div>
+                            <div className="col">{detail.Task_owner}</div>
                         </div>
                         <div className="row mb-1 ">
                             <div className="col-5 font-monospace">Task Creator:</div>
-                            <div className="col">{row.Task_creator}</div>
+                            <div className="col">{detail.Task_creator}</div>
                         </div>
                         <div className="row mb-1 task-owner">
                             <div className="col-5 font-monospace">Task Created on:</div>
@@ -91,11 +200,26 @@ const Modal = ({row, taskID}) => {
                         </div>
                         <div className="row mb-1 task-owner">
                             <div className="col-5 font-monospace">Task plan:</div>
-                            <div className="col">{row.Task_plan}</div>
+                            <div className="col">{detail.Task_plan}</div>
                         </div>
+                        { 
+                            !(row.Task_state === "close") ?  
+                            <div className="row mb-1">
+                                <div className="col-5 font-monospace">Add Comment:</div>
+                                <textarea
+                                    className="form-control"
+                                    type="text"
+                                    rows="3"
+                                    onChange={e => setNote(e.target.value)}
+                                />
+                                <button type="button" className="btn btn-success float-end" onClick={() => handleSubmit()}>Add Comment</button>
+
+                            </div>
+                        : null
+                        }
                         <hr />
                         <div className='font-monospace'>Task notes: </div>
-                        <p className='notesH overflow-auto' style={{ "whiteSpace": "pre-line" }}> {row.Task_notes}</p>
+                        <p className='notesH overflow-auto' style={{ "whiteSpace": "pre-line" }}> {detail.Task_notes}</p>
                         <div>
 
                         </div>
@@ -116,21 +240,28 @@ const TaskView = ({row,index}) => {
     let params = useParams();
     
     const [lead, setLead] = useAtom(isLeadAtom);
- 
+    
+    if (row !== undefined) {
     return (
-        <Draggable draggableId={row.Task_id} index={index}> 
+        <Draggable draggableId={row.Task_id} index={index} isDragDisabled={row.Task_state === "close"}> 
         {(provided) => {
             return (
                 <div className="row bg-white border border-darkblue mb-2 mt-1 task-height"
                 ref={provided.innerRef}
                 {...provided.draggableProps}
                 {...provided.dragHandleProps}>
-                    <p className='m-0 mt-2 fs-5'>{row.Task_name}</p>
-                    <p className='m-0 mt-1'><small>{row.Task_id}</small></p>
-                    <div className="task-owner mt-1">
-                        <small>{row.Task_owner}</small>
+                    
+                    <small>Task Name:</small>
+                    <div className='fw-bold text-end'>{row.Task_name}</div>
+                    <div className='fs-6 task-owner'>
+                        <small>Task id:  <span className='float-end'>{row.Task_id}</span></small>
                     </div>
 
+                    <div className="">
+                        <small>Task owner:<span className='float-end'>{row.Task_owner}</span></small>
+                    </div>
+                    
+                    
                     {/* VIEW/EDIT TASK  */}
                     {
                         lead && row.Task_state ==='open' ? 
@@ -142,7 +273,7 @@ const TaskView = ({row,index}) => {
             );
         }}
         </Draggable>
-    )
+    )}
 }
 
 // function to reorder the items
@@ -170,16 +301,6 @@ function changeList(arr, source, destination) {
     arrCopy[destination.droppableId] = destCopy;
     
     return arrCopy;
-        // get task details
-        // let id = arrCopy[destination.droppableId][destination.index].Task_id;
-        // console.log(`fetching data task id ${id}`)
-        // fetch(`../../task/getAppTask/${id}`)
-        //     .then(res => res.json())
-        //     .then(data => {
-        //         arrCopy[destination.droppableId][destination.index] = data;
-        //         resolve(arrCopy);
-        //     })
-        //     .catch(e => reject(e));
 }
 
 // returns the route link based on the action
@@ -204,7 +325,7 @@ const ViewTasks = () =>{
     const createTLink = `/createTask/${params.app}`;
     const createPLink = `/createPlan/${params.app}`;
 
-    const [tasks, setTasks] = React.useState([]);
+    const [tasks, setTasks] = useAtom(taskAtom);
     //const [oldTasks, setOldT] = React.useState([]);
     const [userPerm, setUserPerm] = React.useState([]);
     const [appDetail, setAppDetail] = React.useState([]);
@@ -214,55 +335,14 @@ const ViewTasks = () =>{
     function refreshTasks() {
         const link1 = `../../task/getAppTasks/${params.app}`;
         fetch(link1).then( res => res.json() )
-                    .then( data => setTasks(data));
+                    .then( data => {
+                        setTasks(data);
+                        console.log('tasks refreshed')
+                    });
     }
 
-    
-    // function updateTask(source, destination) { 
-    //     const actLink = getAction(destination.droppableId);
-    //     //const tasksCopy = Object.assign({},tasks,{});     
-    //     console.log(tasks[source.droppableId][source.index])   
-    //     const task_id = tasks[source.droppableId][source.index].Task_id;
-        
-    //     // update board
-    //     const a_list = changeList(tasks, source, destination);
-    //     setTasks(a_list);
-
-    //     // send http request to update task state
-    //     const xhttp = new XMLHttpRequest();
-    //     xhttp.onreadystatechange = function() {
-    //         // modify the tasks if the task state has been updated
-    //         if (this.readyState === 4 && this.status === 200) {
-    //             // update board
-    //             // const a_list = changeList(tasks, source, destination);
-    //             // setTasks(a_list);
-
-    //             // changeList(tasks, source, destination)
-    //             //     .then(result => setAppDetail(result))
-    //             //     .catch(e => console.log(e));
-    //             //refreshTasks();
-    //             //return 'OK';
-    //             //setOldT(a_list);
-    //             console.log(tasks)
-    //             alert('Updated task');
-    //         // alert if user don't have the permissions to update the task state
-    //         } else if (this.readyState === 4 && this.status === 403) {
-    //             alert("User don't have permission to update state.");
-    //         // alert if unable to update task state
-    //         } else if (this.readyState === 4 && this.status > 401) {
-    //             //return 'notOK';    // revert back to old list
-    //             alert('Unable to update state');
-    //         } 
-    //     }
-    //     xhttp.open("PUT",actLink,true);
-    //     xhttp.setRequestHeader("Content-type", "application/json");
-    //     xhttp.send(JSON.stringify({ taskId: task_id, app: params.app}));
-    // }
 
     function updateTask(source,destination) { 
-        //const tasksCopy = Object.assign({},tasks,{});     
-        //console.log(tasks[source.droppableId][source.index])           
-        // update board
         const actLink = getAction(destination.droppableId);
         const task_id = tasks[source.droppableId][source.index].Task_id;
 
@@ -273,17 +353,14 @@ const ViewTasks = () =>{
         const xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
             // modify the tasks if the task state has been updated
-            if (this.readyState === 4 && this.status === 200) {
+            if (this.readyState === 4) {
                 refreshTasks();
-            // alert if user don't have the permissions to update the task state
-            } else if (this.readyState === 4 && this.status === 403) {
-                alert("User don't have permission to update state.");
-                refreshTasks();
-            // alert if unable to update task state
-            } else if (this.readyState === 4 && this.status > 401) {
-                alert('Unable to update state');
-                refreshTasks();
-            } 
+                if (this.status === 403) {
+                    //alert("User don't have permission to update state.");
+                } else if (this.status > 400 && this.status !== 403) {
+                    alert('Unable to update state');                    
+                }
+            }
         }
         xhttp.open("PUT",actLink,true);
         xhttp.setRequestHeader("Content-type", "application/json");
@@ -304,9 +381,8 @@ const ViewTasks = () =>{
                 fetch(link3).then(response => response.json())
             ]).then(([data1, data2, data3, data4]) => {
                 setTasks(data1);
-                //setOldT(data1);
                 setUserPerm(data2);
-                setLead(data2.App_permit_Open);
+                setLead(data2.App_permit_Create);
                 modifyCols(data2);
                 setAppDetail(data3);
                 setAppPlans(data4);
@@ -330,17 +406,17 @@ const ViewTasks = () =>{
             let listCopy = tasks;
             listCopy[source.droppableId] = list;
             setTasks(listCopy);
-            //setOldT(listCopy);
         } else {
             if (destination.droppableId === "open") { return; }
 
-            if (source.droppableId === "open" && destination.droppableId === "to_do" && userPerm.App_permit_toDoList) {
+            if (source.droppableId === "open" && destination.droppableId === "to_do" && userPerm.App_permit_Open) {
                 updateTask(source,destination);
-            } else if (((source.droppableId === "to_do" && destination.droppableId === "doing") || 
-                        (source.droppableId === "doing" && destination.droppableId === "to_do")) && userPerm.App_permit_Doing) {
+            } else if ((source.droppableId === "to_do" && destination.droppableId === "doing") && userPerm.App_permit_toDoList) {
                 updateTask(source,destination);
-            } else if (((source.droppableId === "done" && destination.droppableId === "doing") || 
-                        (source.droppableId === "doing" && destination.droppableId === "done")) && userPerm.App_permit_Done) {
+            } else if (((source.droppableId === "doing" && destination.droppableId === "to_do") || 
+                        (source.droppableId === "doing" && destination.droppableId === "done")) && userPerm.App_permit_Doing) {
+                updateTask(source,destination);
+            } else if ((source.droppableId === "done" && destination.droppableId === "doing") && userPerm.App_permit_Done) {
                 updateTask(source,destination);
             } else if (source.droppableId === "done" && destination.droppableId === "close" && userPerm.App_permit_Close) {
                 updateTask(source,destination);
@@ -372,8 +448,7 @@ const ViewTasks = () =>{
                 }
             </div>
         </div>
-        
-        {/* task columns */}
+
         <div className="row mt-1 mb-2">
         <DragDropContext onDragEnd={onDragEnd}>
             {/* open column */}
@@ -514,6 +589,9 @@ const ViewTasks = () =>{
                     <td><small>Plan name</small></td>
                     <td><small>Plan start date</small></td>
                     <td><small>Plan end date</small></td>
+                    {
+                        userPerm.App_permit_CreateP ? <td><small>Edit Plan</small></td> : <></>
+                    }
                 </tr>
                 {
                     appPlans.map((row,index) => (
@@ -521,9 +599,13 @@ const ViewTasks = () =>{
                             <td>{row.Plan_MVP_name}</td>
                             <td>{row.Plan_startDate}</td>
                             <td>{row.Plan_endDate}</td>
+                            {
+                                userPerm.App_permit_CreateP ? <ModalEditPlan plan={row} /> : <></>
+                            }
                         </tr>
                     ))
                 }
+                
                 </tbody>
             </table>
         </div>

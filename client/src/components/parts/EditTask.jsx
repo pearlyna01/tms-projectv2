@@ -1,15 +1,29 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate,useParams } from 'react-router-dom';
 import { useAtom } from "jotai";
 import { plansAtom } from '../ViewTasks';
 
 const EditTask = ({row,taskID}) => {
+    const [detail, setDetail] = useState(row);
+    
     let createDate = new Date(row.Task_createDate);
     const [appPlans, setAppPlans] = useAtom(plansAtom);
     const [desc, setDesc] = React.useState(row.Task_description);
     const [plan, setPlan] = React.useState(row.Task_plan);
+    const [note, setNote] = React.useState('');
 
     let params = useParams();
+
+    function refreshDetails() {
+        fetch(`../../task/getAppTask/${row.Task_id}`)
+            .then(res => res.json())
+            .then(data => {
+                setDetail(data);
+                setPlan(data.Plan_MVP_name);
+                setDesc(data.Task_description);
+            })
+            .catch(e => console.log(e));
+    }
 
     function handleSubmit() {
         //e.preventDefault();
@@ -19,7 +33,8 @@ const EditTask = ({row,taskID}) => {
         xhttp.setRequestHeader("Content-type", "application/json");
         xhttp.onreadystatechange = function() {
             if (this.readyState === 4 && this.status === 200) {
-                alert("successfully Updated task");
+                setNote('');
+                refreshDetails();
             } 
             else if (this.readyState === 4 && this.status > 400) {
                 alert('Unable to update task');
@@ -30,7 +45,8 @@ const EditTask = ({row,taskID}) => {
             app: params.app,
             taskId: row.Task_id,
             plan: plan,
-            desc: desc
+            desc: desc,
+            comment: note
         }));
     }
 
@@ -57,7 +73,7 @@ const EditTask = ({row,taskID}) => {
             <div className="modal-dialog">
                 <div className="modal-content">
                     <div className="modal-header">
-                        <h5 className="modal-title">{row.Task_name}</h5>
+                        <h5 className="modal-title">{detail.Task_name}</h5>
                         <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div className="modal-body">
@@ -72,8 +88,8 @@ const EditTask = ({row,taskID}) => {
                                 onChange={(e) => setDesc(e.target.value)}
                             />
                         </div>
-                        <div className="row mb-1">
-                            <div className="col-5 font-monospace">Task plan:</div>
+                        <div className="row mb-1 task-owner">
+                            <div className="col-5 pt-2 font-monospace">Task plan:</div>
                             <select 
                                 className="form-select col" 
                                 onChange={e => setPlan(e.target.value)}
@@ -88,6 +104,18 @@ const EditTask = ({row,taskID}) => {
                                 );
                             })  }
                             </select>
+                        </div>
+                        <div className="row mb-1">
+                            <div className="col-5">Add comment:</div>
+                            <textarea
+                                className="form-control"
+                                type="text"
+                                rows="3"
+                                onChange={(e) => setNote(e.target.value)}
+                            />
+                        </div>
+                        <div className="row">
+                            <button type="button" className="btn btn-success" onClick={() => handleSubmit()}>Update</button>
                         </div>
                         <div className="row mb-1 task-owner">
                             <div className="col-5 font-monospace">Task Owner:</div>
@@ -107,12 +135,11 @@ const EditTask = ({row,taskID}) => {
                         </div>
                         <hr />
                         <div className='font-monospace'>Task notes: </div>
-                        <p className='notesH overflow-auto' style={{ "whiteSpace": "pre-line" }}> {row.Task_notes}</p>
+                        <p className='notesH overflow-auto' style={{ "whiteSpace": "pre-line" }}> {detail.Task_notes}</p>
                         <div>
                         </div>
                     </div>
                     <div className="modal-footer">
-                        <button type="button" className="btn btn-success" onClick={() => handleSubmit()}>Update</button>
                         <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>

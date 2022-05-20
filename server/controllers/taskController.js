@@ -256,7 +256,7 @@ try {
 
 // Lead: Create Task
 exports.createTask = async (req, res) => {
-try {
+try {``
     const checkVal = await checkUserPerm(req,'createTask');
     // send status 403 if user don't have the permission to do so
     if (checkVal === false) {
@@ -264,10 +264,11 @@ try {
     } else {
 
     // parse user input
-    const { name, desc, plan, app } = req.body;
+    const { name, desc, plan, app, comment } = req.body;
     const owner = req.session.username;
     // create initial audit 
-    const note = noteGen.makeNote(owner,'open');
+    let note = noteGen.makeNote(owner,'open');
+    note += 'Comments: ' + comment + '\n';
     console.log(note)
     
     try {
@@ -311,8 +312,6 @@ try {
 }   
 };
 
-// Edit App
-
 // Lead: Edit Task (only description and plan)
 exports.editTask = async(req, res) => {
     try {
@@ -321,10 +320,10 @@ exports.editTask = async(req, res) => {
         if (checkVal === false) {
             res.sendStatus(403);
         } else {   
-            const {desc, plan, taskId} = req.body;
+            const {desc, plan, taskId, comment} = req.body;
 
             let note = noteGen.makeNote(req.session.username, 'open');
-            note = note + `>>>New changes to task>>>\nDescription: ${desc}\nPlan: ${plan}\n`;
+            note = note + `>>>New changes to task>>>\nDescription: ${desc}\nPlan: ${plan}\nComments: ${comment}\n`;
 
             const query = `UPDATE nodelogin.task SET Task_description='${desc}', Task_plan='${plan}',Task_notes=CONCAT('${note}',Task_notes)
             WHERE Task_id='${taskId}';`;
@@ -335,6 +334,20 @@ exports.editTask = async(req, res) => {
         console.log(error)
         res.sendStatus(500);
     } 
+};
+
+// Anyone: add comment to task
+exports.addComment = async (req, res) => {
+    try {
+        const note = `--------------\nUser ${req.session.username} added a note.\n${req.body.comment}\n`;
+        const query = `UPDATE nodelogin.task SET Task_notes=CONCAT('${note}',Task_notes) WHERE Task_id='${req.body.taskId}';`;
+
+        await getQuery.processQuery(query, req.pool);
+        res.sendStatus(200);
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(500);
+    }
 };
 
 // PM: Create Plan
@@ -377,13 +390,49 @@ try {
 }   
 };
 
+// PM: Edit Plan
+exports.editPlan = async (req, res) => {
+try {
+    const checkVal = await checkUserPerm(req,'createPlan');
+    // send status 403 if user don't have the permission to do so
+    if (checkVal === false) {
+        res.sendStatus(403);
+    } else {
+    
+    const { name, startDate, endDate, app } = req.body;
+
+    // queries
+    const query1 = `SELECT EXISTS (SELECT Plan_app_Acronym,Plan_MVP_name FROM nodelogin.plan WHERE Plan_app_Acronym='${app}' AND Plan_MVP_name='${name}');`;
+    const query2 = `UPDATE nodelogin.plan SET Plan_startDate='${startDate}',Plan_endDate='${endDate}' 
+    WHERE Plan_app_Acronym="${app}" AND Plan_MVP_name='${name}';`;
+
+    try {
+        // if app acronym exists and no duplicate plan name, insert. Else, send errors.
+        const result1 = await getQuery.processQuery(query1, req.pool);
+        if (result1 === 0) {
+            res.sendStatus(400);
+        } else {
+            await getQuery.processQuery(query2, req.pool);
+            res.sendStatus(200);
+        }
+    } catch (error) {
+        console.log(error)
+        res.sendStatus(500);
+    }
+}
+} catch (error) {
+    console.log(error)
+    res.sendStatus(500);
+}   
+}
+
 // PM: approve new task/ set open->toDo
 exports.setToDo = async(req, res) => {
     const { taskId } = req.body;
     const owner = req.session.username;
 try {
-    const checkVal1 = await checkUserPerm(req,'setToDo');    // if proj. man. wants to approce
-    const checkVal2 = await checkUserPerm(req,'setDoing');   // if tm wants to move back
+    const checkVal1 = await checkUserPerm(req,'setOpen');    // if proj. man. wants to approce
+    const checkVal2 = await checkUserPerm(req,'setToDo');   // if tm wants to move back
     
     // check task state
     const query1 = `SELECT Task_state FROM nodelogin.task WHERE Task_id="${taskId}";`;

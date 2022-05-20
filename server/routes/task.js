@@ -11,13 +11,11 @@ const {
 const { 
     createApp, getAllApps,
     createTask, createPlan,
-    editTask, editApp,
+    editTask, editApp, addComment, editPlan,
     setToDo, setDoing, setDone, setClose,
     getAppPlans, getAppTasks, getAppInfo, getTaskDetail, getOneAppInfo,
     getUserPerms 
 } = require('../controllers/taskController');
-
-
 
 // Get all plans of an app
 router.route('/getAppPlans/:app').get( getAppPlans);
@@ -47,13 +45,18 @@ router.route('/createTask').post(
 );
 // Lead/user with create permit: edit task
 router.route('/editTask').put( isAuthenticated, editTask);
-// PM/user with createP permit: create Plan
+// add comment to task
+router.route('/addComment').put( isAuthenticated, addComment);
+// PM: create Plan
 router.route('/createPlan').post(
     isAuthenticated,
     createPlan
 );
-
-
+// PM: edit Plan
+router.route('/editPlan').post(
+    isAuthenticated,
+    editPlan
+);
 
 // PM/user with todo permit: approve task/ open->toDo
 router.route('/setToDo').put(

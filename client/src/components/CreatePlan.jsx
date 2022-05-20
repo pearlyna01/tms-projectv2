@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import UserNav from './navbar/UserNav';
-import { Link, useNavigate,useParams } from 'react-router-dom';
+import { useNavigate,useParams } from 'react-router-dom';
 
 const CreatePlan = () => {
     let params = useParams();
@@ -22,7 +22,6 @@ const CreatePlan = () => {
         xhttp.setRequestHeader("Content-type", "application/json");
         xhttp.onreadystatechange = function() {
             if (this.readyState === 4 && this.status === 200) {
-                alert("successfully created plan");
                 navigate(linkBack);
             } 
             else if (this.readyState === 4 && this.status > 400) {

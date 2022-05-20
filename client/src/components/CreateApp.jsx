@@ -62,12 +62,14 @@ const CreateApp = () => {
         xhttp.setRequestHeader("Content-type", "application/json");
         xhttp.onreadystatechange = function() {
             if (this.readyState === 4 && this.status === 200) {
-                alert("successfully created app");
                 navigate('/');
             } 
             else if (this.readyState === 4 && this.status > 400) {
                 // Failed to create app
                 alert('Unable to create app');
+            } else if (this.readyState === 4 && this.status === 400) {
+                // Failed to create app
+                alert('App already exists');
             }
         }
         
@@ -134,7 +136,6 @@ const CreateApp = () => {
                 <label className="form-label">Start Date</label>
                 <DatePicker 
                     selected={startDate} 
-                    minDate={nowDate}
                     onChange={(date) => setStartDate(date)} 
                     className="form-control col ms-2"
                 />
@@ -159,6 +160,7 @@ const CreateApp = () => {
                     onChange={e => setPermitOpen(e.target.value)}
                     value={permitOpen}
                 >
+                    <option value="">choose role</option>
                     {
                         options.map((role, index) => {
                             return (
@@ -179,6 +181,7 @@ const CreateApp = () => {
                     onChange={e => setPermitToDo(e.target.value)}
                     value={permitToDo}
                 >
+                    <option value="">choose role</option>
                     {
                         options.map((role, index) => {
                             return (
@@ -199,6 +202,7 @@ const CreateApp = () => {
                     onChange={e => setPermitDoing(e.target.value)}
                     value={permitDoing}
                 >
+                    <option value="">choose role</option>
                     {
                         options.map((role, index) => {
                             return (
@@ -219,6 +223,7 @@ const CreateApp = () => {
                     onChange={e => setPermitDone(e.target.value)}
                     value={permitDone}
                 >
+                    <option value="">choose role</option>
                     {
                         options.map((role, index) => {
                             return (
@@ -239,6 +244,7 @@ const CreateApp = () => {
                     onChange={e => setPermitClose(e.target.value)}
                     value={permitClose}
                 >
+                    <option value="">choose role</option>
                     {
                         options.map((role, index) => {
                             return (
@@ -259,6 +265,7 @@ const CreateApp = () => {
                     onChange={e => setPermitCreate(e.target.value)}
                     value={permitCreate}
                 >
+                    <option value="">choose role</option>
                     {
                         options.map((role, index) => {
                             return (

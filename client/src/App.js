@@ -29,6 +29,7 @@ function App() {
           <Route path="/" element={<UserNav> <Dashboard/> </UserNav>}/>
           <Route path="/settings" element={<Settings/>}/>
 
+          <Route path="/createApp" element={<UserNav><CreateApp/></UserNav>}/>
           <Route path="/createPlan/:app" element={<CreatePlan/>}/>
           <Route path='/createTask/:app' element={<CreateTask />}/>
 
@@ -36,10 +37,6 @@ function App() {
 
           {/* ----ADMIN ONLY routes----- */}
           <Route element={<RequireAuth role="admin"/>}>
-            
-            {/* app management  */}
-            <Route path="/createApp" element={<UserNav><CreateApp/></UserNav>}/>
-
             {/* user management */}
             <Route path="/createUser" element={<CreateUser/>}/>
             <Route path="/manageUser" element={<ManageUser />}/> 

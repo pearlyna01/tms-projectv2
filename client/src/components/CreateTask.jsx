@@ -2,9 +2,6 @@ import React, {useEffect} from 'react';
 import UserNav from './navbar/UserNav';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
-// todo:
-// - need to navigate to the main page after submit 
-// - modify to add the app acronym
 const CreateTask = () => {
     let params = useParams();
     const navigate = useNavigate();
@@ -14,6 +11,7 @@ const CreateTask = () => {
     const [tName, setTname] = React.useState('');
     const [Tdesc, setTdesc] = React.useState('');
     const [plan, setPlan] = React.useState('');
+    const [note, setNote] = React.useState('');
     const [listP, setListP] = React.useState([]);
 
     // load the list of plans (of the application)
@@ -25,7 +23,6 @@ const CreateTask = () => {
             .catch(e => alert('unable to fetch list of plans'));
     },[]);
 
-    
     function handleDesc(e) {
         setTdesc(e.target.value);
         setCharLeft(150 - e.target.value.length);
@@ -35,26 +32,28 @@ const CreateTask = () => {
         e.preventDefault();
         const linkForm = `../../task/createTask`;
         const xhttp = new XMLHttpRequest();
-        xhttp.open("POST",linkForm,true);
-        xhttp.setRequestHeader("Content-type", "application/json");
+        
         xhttp.onreadystatechange = function() {
             if (this.readyState === 4 && this.status === 200) {
-                alert("successfully created task");
-                navigate(-1);
-            } 
-            else if (this.readyState === 4 && this.status > 400) {
+                //alert("successfully created task");
+                navigate(`/dashboard/${params.app}`);
+            } else if (this.readyState === 4 && this.status > 400) {
                 alert('Unable to create task');
             }
         }
         
-        xhttp.send(JSON.stringify({
-            name:tName,
-            desc: Tdesc,
-            plan: plan,
-            app: params.app,
-        }));
+        const obj = {
+            'name':tName,
+            'desc': Tdesc,
+            'comment': note,
+            'plan': plan,
+            'app': params.app
+        };
+        xhttp.open("POST",linkForm,true);
+        xhttp.setRequestHeader("Content-type", "application/json");
+        xhttp.send(JSON.stringify(obj));
     }
-
+    let link1 = `/dashboard/${params.app}`;
     return(
         <> 
         <UserNav />   
@@ -72,7 +71,7 @@ const CreateTask = () => {
             <div className="row mb-2">
                 <h5 className='col'>Create New Task for "{params.app}"</h5>
                 <div className="col-auto">
-                    <button className='btn btn-outline-primary mb-2 fw-bold' onClick={() => navigate(-1)}>
+                    <button className='btn btn-outline-primary mb-2 fw-bold' onClick={() => navigate(link1)}>
                         &lt; back
                     </button>
                 </div>
@@ -94,15 +93,15 @@ const CreateTask = () => {
                 <label>Task Description</label>
                 <textarea 
                     className='form-control' 
+                    id='textbox1'
                     cols="25" 
                     rows="3" 
                     onChange={e => handleDesc(e)}
-                    required
                 />
                 <p className='text-end'>{charLeft} / 150 characters left</p>
             </div>
             {/* task plan */}
-            <div className="row mb-4">
+            <div className="row mb-3">
                 <label>App Plan</label>
                 <select 
                     className="form-select" 
@@ -119,14 +118,23 @@ const CreateTask = () => {
                     })  }
                 </select>
             </div>
-
-            <div className="row">
+            {/* task notes */}
+            <div className="row mb-4">
+                <label>Task Notes</label>
+                <textarea
+                    className='form-control'
+                    id='textbox2'
+                    cols="25"
+                    rows="3"
+                    onChange={e => setNote(e.target.value)}
+                />
+            </div>
+            <div className="row mb-5">
                 <div className="col"></div>
                 <div className="col-auto">
-                <button type="submit" className="btn btn-primary m-0 float-end">Save New Task</button>
+                <button type="submit" className="btn btn-primary float-end">Save New Task</button>
                 </div>
             </div>
-            
         </form>
         </div>
         <div className="col"></div>

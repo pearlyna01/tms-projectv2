@@ -51,11 +51,6 @@ const AppEditModal = ({}) => {
 
     const [isUpdate, setIsUpdate] = useAtom(isUpdated);
 
-    const promise = new Promise((resolve, reject) => {
-        
-        resolve();
-    });
-
     if (isUpdate) {
         setIsUpdate(!isUpdate);
         // start/end/current dates
@@ -85,7 +80,7 @@ const AppEditModal = ({}) => {
         xhttp.setRequestHeader("Content-type", "application/json");
         xhttp.onreadystatechange = function() {
             if (this.readyState === 4 && this.status === 200) {
-                alert("successfully edited app");
+                // alert("successfully edited app");
             } 
             else if (this.readyState === 4 && this.status > 400) {
                 // Failed to create app

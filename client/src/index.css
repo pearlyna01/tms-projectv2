@@ -49,7 +49,7 @@ code {
 }
 
 .task-height {
-  height: 130px;
+  height: 170px;
 }
 
 /* #ColOpen, #ColToDo, #ColDoing, #ColDone, #ColClose {
@@ -71,6 +71,11 @@ code {
 
 .col-NO {
   background-color: #fce3e3;
+}
+
+.editBUT {
+  background-color: blueviolet !important;
+  color: white;
 }
 
 .notesH {
