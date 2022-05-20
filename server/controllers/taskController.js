@@ -465,43 +465,32 @@ try {
 
 // Team member: working on task/ toDo->Doing
 exports.setDoing = async(req, res) => {
+    const { taskId } = req.body;
+    const owner = req.session.username;
 try {
-    const checkVal = await checkUserPerm(req,'setDoing');
-    // send status 403 if user don't have the permission to do so
-    if (checkVal === false) {
-        res.sendStatus(403);
+    const checkVal1 = await checkUserPerm(req,'setDoing');
+    const checkVal2 = await checkUserPerm(req,'setDone');
+
+    // check task state
+    const query1 = `SELECT Task_state FROM nodelogin.task WHERE Task_id="${taskId}";`;
+    const result = await getQuery.processQuery(query1,req.pool);
+    if (result.length === 0) { res.sendStatus(400); }       // task don't exist
+
+    else if (((checkVal1 === true) && (result[0].Task_state === 'to_do')) ||
+            ((checkVal2 === true) && (result[0].Task_state === 'done'))) {
+        // make the note that task status is set to Doing
+        const note = noteGen.makeNote(owner, 'doing');
+        console.log(note)
+
+        // Update the status of the task=doing, audit trail, task_owner
+        const query2 = `UPDATE nodelogin.task SET Task_owner='${owner}',Task_state='doing', Task_notes=CONCAT('${note}',Task_notes) 
+        WHERE Task_id='${taskId}';`;
+
+        // Update the task
+        await getQuery.processQuery(query2, req.pool);
+        res.sendStatus(200);
     } else {
-
-        const { taskId } = req.body;
-        const owner = req.session.username;
-
-        // check if taskid is valid
-        const query1 = `SELECT Task_state FROM nodelogin.task WHERE Task_id="${taskId}";`;
-        try {
-            const result = await getQuery.processQuery(query1,req.pool);
-            // send status 400 if task don't exist
-            if (result.length === 0) {
-                res.sendStatus(400);
-            } else if ((result[0].Task_state == 'to_do' )||(result[0].Task_state == 'done')) {
-                // make the note that task status is set to Doing
-                const note = noteGen.makeNote(owner, 'doing');
-                console.log(note)
-
-                // Update the status of the task=doing, audit trail, task_owner
-                const query2 = `UPDATE nodelogin.task SET Task_owner='${owner}',Task_state='doing', Task_notes=CONCAT('${note}',Task_notes) 
-                WHERE Task_id='${taskId}';`;
-
-                // Update the task
-                await getQuery.processQuery(query2, req.pool);
-                res.sendStatus(200);
-            } else {
-                //console.log('LOGGGGGGGGG', result[0].Task_state)
-                res.sendStatus(403);
-            }
-        } catch (error) {
-            console.log("task state can't be set because of its previous state")
-            res.sendStatus(500);
-        }
+        res.sendStatus(403);
     }
 } catch (error) {
     console.log(error)
@@ -512,7 +501,7 @@ try {
 // Team member: working on task/ toDo->Doing
 exports.setDone = async(req, res) => {
 try {
-    const checkVal = await checkUserPerm(req,'setDone');
+    const checkVal = await checkUserPerm(req,'setDoing');
     // send status 403 if user don't have the permission to do so
     if (checkVal === false) {
         res.sendStatus(403);
