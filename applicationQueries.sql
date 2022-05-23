@@ -24,3 +24,5 @@ SELECT App_Description, App_startDate, App_endDate FROM nodelogin.application WH
 SELECT App_permit_Open, App_permit_toDoList, App_permit_Doing, App_permit_Done, 
     App_permit_Close, App_permit_CreateT, App_permit_CreateP FROM nodelogin.application 
     WHERE App_Acronym='ACRO3';
+    
+SELECT App_permit_Done FROM nodelogin.application WHERE App_Acronym="AP2";

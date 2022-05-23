@@ -3,7 +3,7 @@ import React, { useState,useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-import { useNavigate,  Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const CreateApp = () => {
     // options to list the groups
@@ -12,7 +12,6 @@ const CreateApp = () => {
     // start/end/current dates
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
-    const nowDate = new Date();
     
     // Number of characters left in the description text box
     const [charLeft, setCharLeft] = useState(150);
@@ -29,8 +28,7 @@ const CreateApp = () => {
     const [permitDoing, setPermitDoing] = useState('');
     // App permit done
     const [permitDone, setPermitDone] = useState('');
-    // App permit close
-    const [permitClose, setPermitClose] = useState('');
+
     // App permit create 
     const [permitCreate, setPermitCreate] = useState('');
 
@@ -83,7 +81,6 @@ const CreateApp = () => {
             pToDo : permitToDo, 
             pDoing : permitDoing,
             pDone : permitDone, 
-            pClose : permitClose,
             create : permitCreate 
         }));
     }
@@ -222,27 +219,6 @@ const CreateApp = () => {
                     className="form-select"
                     onChange={e => setPermitDone(e.target.value)}
                     value={permitDone}
-                >
-                    <option value="">choose role</option>
-                    {
-                        options.map((role, index) => {
-                            return (
-                                <option key={index} value={role}>
-                                    {role}
-                                </option>
-                            );
-                        })
-                    }
-                </select>  
-            </div>
-
-            {/* permit close */}
-            <div className="row mb-3">
-                <label className="form-label">Groups with permission to Close tasks</label> 
-                <select
-                    className="form-select"
-                    onChange={e => setPermitClose(e.target.value)}
-                    value={permitClose}
                 >
                     <option value="">choose role</option>
                     {

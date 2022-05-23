@@ -20,7 +20,7 @@ exports.getTaskDetail = async(req, res) => {
 exports.getUserPerms = async(req, res) => {
     // query to get all the permissions 
     const query = `SELECT App_permit_Open, App_permit_toDoList, App_permit_Doing, App_permit_Done, 
-    App_permit_Close, App_permit_Create FROM nodelogin.application 
+    App_permit_Create FROM nodelogin.application 
     WHERE App_Acronym='${req.params.app}'`;
 
     try {
@@ -171,11 +171,11 @@ try {
         const note = `Application ${acronym} is created on ${nowDate.toDateString()}`;
         const query = `INSERT INTO nodelogin.application(App_Acronym, App_Description, 
             App_startDate, App_endDate, 
-            App_permit_Open, App_permit_toDoList, App_permit_Doing, App_permit_Done, App_permit_Close,
+            App_permit_Open, App_permit_toDoList, App_permit_Doing, App_permit_Done,
             App_permit_Create, Audit) VALUES 
             ('${acronym}','${desc}','${startDate}','${endDate}', 
             '${pOpen}','${pToDo}','${pDoing}','${pDone}',
-            '${pClose}','${create}','${note}'); `;
+            '${create}','${note}'); `;
     
         getQuery.processQuery(query, req.pool).then( result => {
             // send error if app acronym already exists 
@@ -218,7 +218,7 @@ try {
 
         // update the note if there is any changes 
         const checkAppQuery = `SELECT 
-        App_permit_Open, App_permit_toDoList, App_permit_Doing, App_permit_Done, App_permit_Close,
+        App_permit_Open, App_permit_toDoList, App_permit_Doing, App_permit_Done,
         App_permit_Create FROM nodelogin.application WHERE App_Acronym='${app}';`;
         const result3 = await getQuery.processQuery(checkAppQuery,req.pool);
 
@@ -236,7 +236,7 @@ try {
         const query = `UPDATE nodelogin.application SET App_Description='${desc}', 
         App_startDate='${startDate}', App_endDate='${endDate}', 
             App_permit_Open='${pOpen}', App_permit_toDoList='${pToDo}', App_permit_Doing='${pDoing}', 
-            App_permit_Done='${pDone}', App_permit_Close='${pClose}',App_permit_Create='${create}', Audit=CONCAT('${note}',Audit) 
+            App_permit_Done='${pDone}', App_permit_Create='${create}', Audit=CONCAT('${note}',Audit) 
             WHERE App_Acronym='${app}';`;
     
         getQuery.processQuery(query, req.pool).then( result => {

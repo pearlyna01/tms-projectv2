@@ -30,10 +30,8 @@ function modifyCols(obj) {
             case 'App_permit_Done':
                 let element4 = document.getElementById("ColDone");
                 (obj['App_permit_Done']) ? element4.classList.add("col-OK") : element4.classList.add("col-NO"); 
-                break;
-            case 'App_permit_Close':
                 let element5 = document.getElementById("ColClose");
-                (obj['App_permit_Close']) ? element5.classList.add("col-OK") : element5.classList.add("col-NO"); 
+                (obj['App_permit_Done']) ? element5.classList.add("col-OK") : element5.classList.add("col-NO"); 
                 break;
             default:
                 break;
@@ -416,9 +414,8 @@ const ViewTasks = () =>{
             } else if (((source.droppableId === "doing" && destination.droppableId === "to_do") || 
                         (source.droppableId === "doing" && destination.droppableId === "done")) && userPerm.App_permit_Doing) {
                 updateTask(source,destination);
-            } else if ((source.droppableId === "done" && destination.droppableId === "doing") && userPerm.App_permit_Done) {
-                updateTask(source,destination);
-            } else if (source.droppableId === "done" && destination.droppableId === "close" && userPerm.App_permit_Close) {
+            } else if (((source.droppableId === "done" && destination.droppableId === "doing") ||
+                        (source.droppableId === "done" && destination.droppableId === "close")) && userPerm.App_permit_Done) {
                 updateTask(source,destination);
             } else {
                 return;
@@ -589,9 +586,11 @@ const ViewTasks = () =>{
                     <td><small>Plan name</small></td>
                     <td><small>Plan start date</small></td>
                     <td><small>Plan end date</small></td>
+                    <td>
                     {
-                        userPerm.App_permit_CreateP ? <td><small>Edit Plan</small></td> : <></>
+                        userPerm.App_permit_CreateP ? <small>Edit Plan</small> : <></>
                     }
+                    </td>
                 </tr>
                 {
                     appPlans.map((row,index) => (
@@ -599,9 +598,11 @@ const ViewTasks = () =>{
                             <td>{row.Plan_MVP_name}</td>
                             <td>{row.Plan_startDate}</td>
                             <td>{row.Plan_endDate}</td>
+                            <td>
                             {
                                 userPerm.App_permit_CreateP ? <ModalEditPlan plan={row} /> : <></>
                             }
+                            </td>
                         </tr>
                     ))
                 }

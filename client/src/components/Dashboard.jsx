@@ -18,7 +18,6 @@ const emptyApp = {
         App_permit_Doing: '',
         App_permit_toDoList: "",
         App_permit_Create: '',
-        App_permit_Close:''
     };
 const appDetails = atom(emptyApp);
 const groups = atom([]);
@@ -42,8 +41,6 @@ const AppEditModal = ({}) => {
     const [permitDoing, setPermitDoing] = useState('');
     // App permit done
     const [permitDone, setPermitDone] = useState('');
-    // App permit close
-    const [permitClose, setPermitClose] = useState('');
     // App permit create 
     const [permitCreate, setPermitCreate] = useState('');
 
@@ -67,8 +64,6 @@ const AppEditModal = ({}) => {
         setPermitDoing(currentApp.App_permit_Doing);
         // App permit done
         setPermitDone(currentApp.App_permit_Done);
-        // App permit close
-        setPermitClose(currentApp.App_permit_Close);
         // App permit create 
         setPermitCreate(currentApp.App_permit_Create);
     }
@@ -96,7 +91,6 @@ const AppEditModal = ({}) => {
             pToDo : permitToDo, 
             pDoing : permitDoing,
             pDone : permitDone, 
-            pClose : permitClose,
             create : permitCreate 
         };
         console.log(obj);
@@ -215,26 +209,6 @@ const AppEditModal = ({}) => {
                         className="form-select"
                         onChange={e => setPermitDone(e.target.value)}
                         value={permitDone}
-                    >
-                        {
-                            options.map((role, index) => {
-                                return (
-                                    <option key={index} value={role}>
-                                        {role}
-                                    </option>
-                                );
-                            })
-                        }
-                    </select>  
-                </div>
-
-                {/* permit close */}
-                <div className="row mb-3">
-                    <label className="form-label">Groups with permission to Close tasks</label> 
-                    <select
-                        className="form-select"
-                        onChange={e => setPermitClose(e.target.value)}
-                        value={permitClose}
                     >
                         {
                             options.map((role, index) => {
