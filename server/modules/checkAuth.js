@@ -237,10 +237,10 @@ exports.checkUserPerm = async (req, action) => {
                     .catch(e => reject(e));
                 break;
             case 'setClose':
-                const query5 = `SELECT App_permit_Close FROM nodelogin.application WHERE App_Acronym="${req.body.app}";`;
+                const query5 = `SELECT App_permit_Done FROM nodelogin.application WHERE App_Acronym="${req.body.app}";`;
                 getQuery.processQuery(query5, req.pool)
                     .then(data => {
-                        const grp = data[0].App_permit_Close;
+                        const grp = data[0].App_permit_Done;
                         checkGroup(req.session.username, grp, req.pool)
                             .then(result => resolve(result));
                     })

@@ -7,7 +7,6 @@ const dotenv = require('dotenv');
 const app = express();
 
 // require controllers
-//const apiControl = require('./controllers/apicontroller');
 const dbControl = require('./controllers/dbcontroller');
 
 var port = process.env.PORT || 3001;

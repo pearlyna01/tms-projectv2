@@ -27,7 +27,6 @@ CREATE TABLE `plan` (
   `Plan_startDate` date DEFAULT NULL,
   `Plan_endDate` date DEFAULT NULL,
   `Plan_app_Acronym` varchar(20) DEFAULT NULL,
-  PRIMARY KEY (`Plan_MVP_name`),
   KEY `Plan_app_Acronym` (`Plan_app_Acronym`),
   CONSTRAINT `plan_ibfk_1` FOREIGN KEY (`Plan_app_Acronym`) REFERENCES `application` (`App_Acronym`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
@@ -39,7 +38,7 @@ CREATE TABLE `plan` (
 
 LOCK TABLES `plan` WRITE;
 /*!40000 ALTER TABLE `plan` DISABLE KEYS */;
-INSERT INTO `plan` VALUES ('MVP1','2022-05-12','2022-05-20','APP'),('mvpPlan1','2022-05-17','2022-05-17','GRPS'),('MVP_3','2022-09-20','2022-10-22','ACRO3'),('PLAN','2022-05-10','2022-05-16','APPLE'),('plan2','2022-05-18','2022-05-18','GRPS'),('release1','2022-05-18','2022-05-20','AP2'),('test','2022-05-20','2022-05-20','GRPS');
+INSERT INTO `plan` VALUES ('MVP1','2022-05-12','2022-05-20','APP'),('mvpPlan1','2022-05-17','2022-05-17','GRPS'),('plan2','2022-05-18','2022-05-18','GRPS'),('release1','2022-05-18','2022-05-20','AP2'),('release2','2022-05-25','2022-05-27','TEST'),('release3','2022-05-23','2022-05-21','TEST'),('test','2022-05-20','2022-05-20','GRPS'),('release1','2022-05-23','2022-05-23','BANANA');
 /*!40000 ALTER TABLE `plan` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -52,4 +51,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-05-20 17:55:49
+-- Dump completed on 2022-05-23 17:43:10
