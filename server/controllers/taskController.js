@@ -507,7 +507,7 @@ try {
         res.sendStatus(403);
     } else {
 
-    const { taskId } = req.body;
+    const { taskId, app } = req.body;
     const owner = req.session.username;
 
     // check if taskid is valid
@@ -518,13 +518,28 @@ try {
         if (result.length === 0) {
             res.sendStatus(400);
         } else if (result[0].Task_state === 'doing') {
-            // get the email and send email to the task_creator 
-            const query3 = `SELECT email FROM nodelogin.accounts WHERE username='${result[0].Task_creator}';`;
-            const result2 = await getQuery.processQuery(query3,req.pool);
-            if (result2.length==0) {
-                console.log('no email')
+            // find the lead position 
+            const query4 = `SELECT App_permit_Done FROM nodelogin.application WHERE App_Acronym="${app}";`;
+            const leadPos = await getQuery.processQuery(query4, req.pool);
+
+            // find emails of users with the same lead position  
+            const query6 = `SELECT email FROM nodelogin.accounts WHERE username IN (
+                SELECT username FROM nodelogin.groups WHERE id IN 
+                (SELECT MAX(id) FROM nodelogin.groups WHERE groupName="${leadPos[0].App_permit_Done}" 
+                AND NOT username="desc" GROUP BY username) AND active = '1')`;
+            const emailList = await getQuery.processQuery(query6, req.pool);    
+            const len = emailList.length;
+            for (let i = 0; i < len; i++) {
+                await sendEmail.sendNotif(emailList[i].email, result[0].Task_name);
             }
-            await sendEmail.sendNotif(result2[0].email, result[0].Task_name);
+            
+            // get the email and send email to the task_creator 
+            // const query3 = `SELECT email FROM nodelogin.accounts WHERE username='${result[0].Task_creator}';`;
+            // const result2 = await getQuery.processQuery(query3,req.pool);
+            // if (result2.length==0) {
+            //     console.log('no email')
+            // }
+            // await sendEmail.sendNotif(result2[0].email, result[0].Task_name);
 
             // make the note that task status is set to Done
             const note = noteGen.makeNote(owner, 'done');
