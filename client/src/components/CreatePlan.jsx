@@ -24,7 +24,7 @@ const CreatePlan = () => {
             if (this.readyState === 4 && this.status === 200) {
                 navigate(linkBack);
             } 
-            else if (this.readyState === 4 && this.status > 400) {
+            else if (this.readyState === 4 && this.status >= 400) {
                 alert('Unable to create plan');
             }
         }

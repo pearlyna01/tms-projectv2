@@ -362,22 +362,24 @@ try {
     const { name, startDate, endDate, app } = req.body;
 
     // queries
-    const query1 = `SELECT EXISTS (SELECT App_Acronym FROM nodelogin.application WHERE App_Acronym='${app}');`;
+    const query1 = `SELECT EXISTS (SELECT App_Acronym FROM nodelogin.application WHERE App_Acronym='${app}') AS result;`;
     const query2 = `INSERT INTO nodelogin.plan VALUES ('${name}','${startDate}','${endDate}','${app}');`;
 
+    // check if plan name already exists
+    const query3  = `SELECT EXISTS (SELECT Plan_app_Acronym FROM nodelogin.plan WHERE Plan_MVP_name='${name}' AND Plan_app_Acronym='${app}') AS result;`;
     try {
         // if app acronym exists and no duplicate plan name, insert. Else, send errors.
         const result1 = await getQuery.processQuery(query1, req.pool);
-        if (result1 === 0) {
+        const result3 = await getQuery.processQuery(query3, req.pool);
+        if (result1[0].result === 0) {
+            res.sendStatus(400);
+        } else if (result3[0].result === 1) {
+            console.log('Plan name exists')
             res.sendStatus(400);
         } else {
-            const result2 = await getQuery.processQuery(query2, req.pool);
+            await getQuery.processQuery(query2, req.pool);
             // send message if duplicate plan name found 
-            if (result2==="Duplicate") {
-                res.send("Plan with same name exist.");
-            } else {
-                res.sendStatus(200);
-            }
+            res.sendStatus(200);
         }
     } catch (error) {
         console.log(error)

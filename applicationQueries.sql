@@ -12,7 +12,7 @@ INSERT INTO nodelogin.application(App_Acronym, App_Description,
           '["Admin"]','["Admin"]','["Admin"]','["Admin"]','["Admin"]','["Admin"]');
 
 /* check if app acronym exist */
-SELECT EXISTS (SELECT App_Acronym FROM nodelogin.application WHERE App_Acronym='');
+SELECT EXISTS (SELECT App_Acronym FROM nodelogin.application WHERE App_Acronym='oo') AS result;
 
 /* increment the running number of the application */
 UPDATE nodelogin.application SET App_Rnumber = App_Rnumber + 1 WHERE App_Acronym="";

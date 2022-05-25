@@ -8,4 +8,4 @@ SELECT * FROM nodelogin.task WHERE Task_app_Acronym='ACRO3' ORDER BY Task_state;
 SELECT Task_state, Task_name, Task_description, 
 Task_notes, Task_id, Task_plan, Task_creator,
 Task_creator, Task_owner, Task_createDate
-FROM nodelogin.task
+FROM nodelogin.task;
