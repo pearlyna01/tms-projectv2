@@ -1,0 +1,56 @@
+-- MySQL dump 10.13  Distrib 8.0.28, for Win64 (x86_64)
+--
+-- Host: localhost    Database: nodelogin
+-- ------------------------------------------------------
+-- Server version	8.0.28
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!50503 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `accounts`
+--
+
+DROP TABLE IF EXISTS `accounts`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `accounts` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) NOT NULL,
+  `password` longtext NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `inactive` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_UNIQUE` (`id`),
+  UNIQUE KEY `username_UNIQUE` (`username`)
+) ENGINE=InnoDB AUTO_INCREMENT=84 DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `accounts`
+--
+
+LOCK TABLES `accounts` WRITE;
+/*!40000 ALTER TABLE `accounts` DISABLE KEYS */;
+INSERT INTO `accounts` VALUES (0,'admin','$argon2i$v=19$m=4096,t=3,p=1$sBKZTnGCmpawlmexCHmabA$jA1jeAsndnlXRoAEh0LSt8nHxw9ORzWiEpwnNeK1eu4','priscilla.grimes46@ethereal.email',0),(6,'member2','$argon2i$v=19$m=4096,t=3,p=1$gVeb1jYb43oUUlKm+O+G/w$/ZMO4YDWgs2nq48rolndSJSiaOc9ijnKD9oWVG3oNls','f@email.com',0),(7,'member3','$argon2i$v=19$m=4096,t=3,p=1$Od3RXejpzrUl9+p9ZV0raQ$VqhZB6vGyC+1Z4SFx2XfadomF9ywYTwChnmRlTl2bjQ','test@email.com',1),(34,'test4','$argon2i$v=19$m=4096,t=3,p=1$K5/9ZaQs1fi9D1+T7bzrhg$JAMDn0a3dVBPyJmh1X21Ww+bYtuyma2LVbbsi+rVitM','email@email.o',0),(70,'test5','$argon2i$v=19$m=4096,t=3,p=1$4rP0LJ5TRrzouL/9QwzJMw$SSKOCKW2a0jWQ+ZCx1kOrXmzV4EAS8fb7pLC4EJDbeI','testemail@email.com',0),(76,'r','$argon2i$v=19$m=4096,t=3,p=1$l4r/vKcFxPOE5EMx5QFB3w$IXMccEUDRhwPnGt02/yxakBmdnIENLtzkRR7k7DGTVI','e7uokaaoij4vvdtc@ethereal.email',0),(77,'test1','$argon2i$v=19$m=4096,t=3,p=1$a2loQWigq11hzd3OG7In3g$DiWXa/ADMDSMjTcB07J3xeTFZBXKr4bYjwY5m285i6E','test@email.com',0),(78,'noRoles','$argon2i$v=19$m=4096,t=3,p=1$1dVrcrmfbACBBjycl9WNaw$/hXz754B0oj8B4jkPyKd/o9SMWr2sWSYxxt4FJloN/U','email@email.o',0),(79,'PM1','$argon2i$v=19$m=4096,t=3,p=1$rCx4xmMUmfvajAHwtcG1qA$c2SWPl2ocze41xbXah5YuxL1nFh8RU9OdWgkGsNcHYY','as@e.c',0),(80,'PM','$argon2i$v=19$m=4096,t=3,p=1$IypTthC/8Pf7FaG827BKpQ$pP8VNmm2YUCg76HRMWxYTZT8vuAYiPsRgzTa9K5V3Ow','admin@e.com',0),(81,'TeamM','$argon2i$v=19$m=4096,t=3,p=1$ip+E7d8KjPjy0J0XNymv+w$HmjEYIb4bIq/2yslYBkByay5SZzQnGhuJtfw2yZRRaE','admin@e.com',0),(82,'Lead','$argon2i$v=19$m=4096,t=3,p=1$FjqOzbPGHQMC+5sig2UPAA$JL5DaF/0a0wsfAPq0pVKK7pmSVuZxD09RHfc8yWUMmE','angus.barrows35@ethereal.email',0),(83,'Lead2','$argon2i$v=19$m=4096,t=3,p=1$+yNFfa5lu6eUkamW8ahOxA$OJe1xdphQ42QWUULLCxg/H40Ty0mnK+raOhXnXQnZ64','jaron.flatley15@ethereal.email',0);
+/*!40000 ALTER TABLE `accounts` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2022-08-15  9:49:59
